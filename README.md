@@ -12,6 +12,7 @@ Our minimum viable product features a word bank to which the user can add words,
 [Hitaansh Jain](https://github.com/hitaanshjain)  
 [Wonden Gyatso](https://github.com/wondeng)  
 [Sara Herschmann](https://github.com/saramhersch)  
+[Jaylon McDuffie](https://github.com/treejitsu) 
 
 ## History
 
