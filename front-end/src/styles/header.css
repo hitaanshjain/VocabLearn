@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
+.header-left {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    align-items: center;
+  }
+  
+  .header-right {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex: 1;
+    align-items: center;
+  }
+  
+  .header-logo {
+    font-family: 'Caveat', cursive;
+    margin: 0;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+  }
+  
+  .header button {
+    margin-top: 0;
+  }
+  
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.8rem;
+    padding: 0;
+    color: inherit;
+    margin-top: 0;
+  }

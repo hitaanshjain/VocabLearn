@@ -1,19 +1,26 @@
-# Project Repository
+# VocabLearn
 
-This repository will be used for team projects.
+## Description and Product Vision Statement
 
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
+VocabLearn is a full-stack application that allows users to learn and practice new words to expand their vocabulary. 
 
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
+Our minimum viable product features a word bank to which the user can add words, which can be either entered by the user or generated. Once users accumulate enough words, they can be quizzed on the words in their bank, and they can see how many times they have successfully answers questions involving a given word. In addition, the app includes a reverse dictionary feature for users to look up words based on a prompt or definition.  
 
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
+## Team members
 
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
+[Akshara Taraniganty](https://github.com/akshara-t)  
+[Hitaansh Jain](https://github.com/hitaanshjain)  
+[Wonden Gyatso](https://github.com/wondeng)  
+[Sara Herschmann](https://github.com/saramhersch)  
+[Jaylon McDuffie](https://github.com/treejitsu) 
 
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
+## History
 
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
+VocabLearn was created as a way to help users expand their vocabulary and easily learn new words through quizzes and repitition. The idea originated from personal experiences of trying to find better vocabulary while writing as an English minor. 
 
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
+Please refer to our [CONTRIBUTING.md](https://github.com/agile-students-spring2026/final-subparallel/blob/master/CONTRIBUTING.md) file for guidelines on collaboration, responsibilities, and accountability among team members.
 
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
+## Building and Testing
+
+More information on this later.
+

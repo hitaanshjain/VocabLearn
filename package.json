@@ -1,0 +1,15 @@
+{
+  "name": "final-subparallel",
+  "version": "1.0.0",
+  "description": "VocabLearn is a full-stack application that allows users to learn and practice new words to expand their vocabulary.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-burger-menu": "^3.1.0",
+    "react-router-dom": "^7.13.1"
+  }
+}
