@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
+import Menu from './Menu.jsx';
 import '../styles/header.css';
 
 const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -11,9 +13,12 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
   };
 
   return (
+    <>
+    <Menu isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
     <header className="header">
       <div className="header-left">
-        <button onClick={() => navigate('/menu')}>&#9776;</button>
+        <button onClick={() => setDrawerOpen(true)}>&#9776;</button>
         <button onClick={() => navigate('/home')}>Home</button>
       </div>
 
@@ -30,6 +35,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
         )}
       </div>
     </header>
+    </>
   );
 };
 
