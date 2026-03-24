@@ -1,0 +1,26 @@
+/* styles for the form submit button */
+button {
+    margin-top: 20px;
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    padding: 15px;
+    font-size: 20px;
+    display: flex; 
+    flex-direction: column;
+    align-items: center
+  }
+  
+  /* changes to the submit button when it is being clicked */
+button:active {
+    color: black;
+    background-color: white;
+    border-color: black;
+  }
+
+.button-container {
+    display: flex;
+    flex-direction: column;   /* stack vertically */
+    align-items: center;      /* center horizontally */
+    gap: 10px;
+}

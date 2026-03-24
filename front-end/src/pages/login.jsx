@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
+
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -14,6 +16,7 @@ const Login = () => {
           setMessage(m);
         return;
       }
+      setIsLoggedIn(true);
       navigate("/home");
     };
   

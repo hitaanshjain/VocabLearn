@@ -6,17 +6,17 @@ const Home = () => {
     return (
     <div>
         <h1>Home</h1>
-        <div>
-            <button onClick={() => navigate('/addWord')}>
+        <div className="button-container">
+            <button onClick={() => navigate('/add-word')}>
                 Add Word
             </button>
-            <button onClick={() => navigate('/quizPage')}>
+            <button onClick={() => navigate('/quiz')}>
                 Take a Vocab Quiz
             </button>
-            <button onClick={() => navigate('/reverseDict')}>
+            <button onClick={() => navigate('/reverse-dict')}>
                 Find A Word From The Definition
             </button>
-            <button onClick={() => navigate('/wordList')}>
+            <button onClick={() => navigate('/word-list')}>
                 View Word Bank
             </button>
       </div>
