@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
-const Login = ({ setIsLoggedIn }) => {
+function Login({ setIsLoggedIn }) {
 
 
     const [username, setUsername] = useState('');
@@ -37,6 +37,6 @@ const Login = ({ setIsLoggedIn }) => {
         </div>
       </div>
     );
-  };
+}
 
 export default Login;
