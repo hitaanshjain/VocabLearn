@@ -8,6 +8,9 @@ import Header from './components/header.jsx';
 import QuizPage from './pages/quizPage.jsx';
 import QuizResults from './pages/quizResults.jsx';
 import AddWord from './pages/addWord.jsx';
+import ReverseDict from './pages/reverseDict.jsx';
+import WordList from './pages/wordList.jsx';
+import WordPage from './pages/wordPage.jsx';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,6 +25,9 @@ const App = () => {
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/quiz-results" element={<QuizResults />} />
         <Route path="/add-word" element={<AddWord />} />
+        <Route path="/reverse-dict" element={<ReverseDict />} />
+        <Route path="/word-list" element={<WordList />} />
+        <Route path="/word/:id" element={<WordPage />} />
       </Routes>
     </>
   );
