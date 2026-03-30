@@ -32,7 +32,7 @@ function AddWord() {
   };
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div style={{ padding: '40px', textAlign: 'center'}}>
       <h1>Add Word</h1>
 
       <form

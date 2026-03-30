@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
-const Home = () => {
+function Home() {
     const navigate = useNavigate();
     return (
     <div>
@@ -23,6 +23,6 @@ const Home = () => {
     </div>
 
     );
-  };
+}
 
 export default Home;
