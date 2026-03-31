@@ -20,7 +20,7 @@ function WordPage() {
     return (
         <div>
             <h1>{selectedWord.word}</h1>
-            <p style={{margin: '26px auto'}}>{selectedWord.definition}</p>
+            <p style={{margin: '26px auto'}}>{"Definition: " + selectedWord.definition}</p>
             <button type="button" onClick={() => navigate('/word-list')} style={{margin: 'auto'}}>Back to Word Bank</button>
         </div>
     );

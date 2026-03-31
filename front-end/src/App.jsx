@@ -11,6 +11,7 @@ import AddWord from './pages/addWord.jsx';
 import WordList from './pages/wordList.jsx';
 import WordPage from './pages/wordPage.jsx';
 import ReverseSearch from "./pages/reverseSearch";
+import SearchWord from './pages/searchWord.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,10 +25,11 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/quiz-results" element={<QuizResults />} />
-        <Route path="/add-word" element={<AddWord />} />
         <Route path="/word-list" element={<WordList />} />
         <Route path="/word/:id" element={<WordPage />} />
-        <Route path="/reverse-dict" element={<ReverseSearch />} />
+        <Route path="/search" element={<SearchWord />} />
+        <Route path="/add-word" element={<AddWord/>} />
+        <Route path="/reverse-dict" element={<Navigate to="/search?mode=definition" replace />} />
       </Routes>
     </>
   );

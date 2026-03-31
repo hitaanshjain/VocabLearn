@@ -8,13 +8,12 @@ function QuizResults() {
   const total = location.state?.total || 0;
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div style={{ padding: '40px', textAlign: 'center',  margin: '0 auto'}}>
       <h1>Quiz Results</h1>
       <h2>
         You got {score} out of {total}
       </h2>
-
-      <button onClick={() => navigate('/quiz')}>Try Again</button>
+      <button onClick={() => navigate('/quiz')} className = 'try-again-button'>Try Again</button>
     </div>
   );
 }
