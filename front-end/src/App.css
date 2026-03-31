@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 .App-logo {
   height: 40vmin;
@@ -44,8 +45,9 @@ h1 {
 }
 
 p {
-  font-family: helvetica;
+  font-family: 'DM Sans', sans-serif;
 }
+
 
 /* styles for form text fields */
 input[type="text"],
@@ -61,7 +63,7 @@ input[type="submit"] {
   background-color: black;
   color: white;
   border: 1px solid white;
-  padding: 20px;
+  padding: 10px;
   font-size: 20px;
 }
 

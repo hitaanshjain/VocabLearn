@@ -4,11 +4,12 @@ button {
     background-color: black;
     color: white;
     border: 1px solid white;
-    padding: 15px;
+    padding: 10px;
     font-size: 20px;
+    font-family: 'DM Sans', sans-serif;
     display: flex; 
     flex-direction: column;
-    align-items: center
+    align-items: center; 
   }
   
   /* changes to the submit button when it is being clicked */
@@ -23,4 +24,18 @@ button:active {
     flex-direction: column;   /* stack vertically */
     align-items: center;      /* center horizontally */
     gap: 10px;
+}
+
+.try-again-button {
+  margin-top: 20px;
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+  padding: 10px;
+  font-size: 20px;
+  font-family: 'DM Sans', sans-serif;
+  display: flex; 
+  flex-direction: column;
+  align-items: center; 
+  margin: 0 auto;
 }
