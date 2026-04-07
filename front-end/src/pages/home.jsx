@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import SearchBar from '../components/searchBar.jsx';
 
-const Home = () => {
+function Home() {
     const navigate = useNavigate();
     return (
     <div>
@@ -26,6 +26,6 @@ const Home = () => {
         </div>
     </div>
     );
-  };
+}
 
 export default Home;
