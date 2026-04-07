@@ -8,9 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 const mockWords = [
-  { id: 1, word: 'Hello', definition: 'greeting' },
-  { id: 2, word: 'professor', definition: 'teacher' },
-  { id: 3, word: 'white', definition: 'color' },
+  { id: 1, word: 'apple', definition: 'a fruit' },
+  { id: 2, word: 'computer', definition: 'an electronic device' },
+  { id: 3, word: 'algorithm', definition: 'a step-by-step procedure' },
 ];
 
 app.post('/api/login', (req, res) => {
@@ -72,9 +72,9 @@ app.get('/api/quiz', (req, res) => {
   res.json([
     {
       id: 1,
-      question: 'What does "hello" mean?',
-      options: ['Greeting', 'Bye', 'Goodbye', 'Thanks'],
-      answer: 'Peace',
+      question: 'What does "apple" mean?',
+      options: ['fruit', 'Bye', 'Goodbye', 'Thanks'],
+      answer: 'fruit',
     },
   ]);
 });

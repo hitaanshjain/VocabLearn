@@ -1,28 +1,37 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 function WordPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const [word, setWord] = useState(null);
+  const [error, setError] = useState('');
 
-  const savedWords = JSON.parse(localStorage.getItem('words')) || [];
-  const selectedWord = savedWords.find((wordObj) => String(wordObj.id) === id);
+  useEffect(() => {
+    const fetchWord = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/words/${id}`);
 
-  if (!selectedWord) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h1>Word Not Found</h1>
-        <button onClick={() => navigate('/word-list')}>Back to Word Bank</button>
-      </div>
-    );
-  }
+        if (!response.ok) {
+          throw new Error('Word not found');
+        }
+
+        const data = await response.json();
+        setWord(data);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchWord();
+  }, [id]);
+
+  if (error) return <p>{error}</p>;
+  if (!word) return <p>Loading...</p>;
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
-      <h1>{selectedWord.word}</h1>
-      <p>{selectedWord.definition}</p>
-      <p>Correct quiz count: {selectedWord.correctCount}</p>
-
-      <button onClick={() => navigate('/word-list')}>Back to Word Bank</button>
+      <h1>{word.word}</h1>
+      <p>{word.definition}</p>
     </div>
   );
 }
