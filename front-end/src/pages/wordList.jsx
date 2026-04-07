@@ -6,9 +6,18 @@ function WordList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedWords = JSON.parse(localStorage.getItem('words')) || [];
-    setWords(savedWords);
-  }, []);
+  const fetchWords = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/words');
+      const data = await response.json();
+      setWords(data);
+    } catch (error) {
+      console.error('Error fetching words:', error);
+    }
+  };
+
+  fetchWords();
+}, []);
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
