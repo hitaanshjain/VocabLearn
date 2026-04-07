@@ -1,25 +1,15 @@
 {
   "name": "back-end",
   "version": "1.0.0",
-<<<<<<< ours
   "description": "",
-  "main": "index.js",
-=======
   "main": "app.js",
->>>>>>> theirs
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-<<<<<<< ours
   "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1"
-=======
-  "description": "",
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1"
@@ -28,6 +18,5 @@
     "@eslint/js": "^10.0.1",
     "eslint": "^10.1.0",
     "globals": "^17.4.0"
->>>>>>> theirs
   }
 }
