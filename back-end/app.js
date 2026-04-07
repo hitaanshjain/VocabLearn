@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+// Mock data
 const mockWords = [
   { id: 1, word: 'ephemeral', definition: 'Lasting for a very short time.', correctCount: 0 },
   { id: 2, word: 'ubiquitous', definition: 'Present, appearing, or found everywhere.', correctCount: 0 },
@@ -15,10 +16,12 @@ const mockWords = [
   { id: 5, word: 'tenacious', definition: 'Tending to keep a firm hold of something.', correctCount: 0 },
 ];
 
+// Redirect root to frontend
 app.get('/', (req, res) => {
   res.redirect('http://localhost:5173/login');
 });
 
+// Auth routes
 app.post('/api/login', (req, res) => {
   const { username } = req.body;
   res.json({ success: true, username, message: 'Mock login successful' });
@@ -28,6 +31,7 @@ app.post('/api/register', (req, res) => {
   res.json({ success: true, message: 'Mock registration successful' });
 });
 
+// Words routes
 app.get('/api/words', (req, res) => {
   res.json(mockWords);
 });
@@ -57,6 +61,7 @@ app.post('/api/words', (req, res) => {
   res.status(201).json(newWord);
 });
 
+// Search routes
 app.get('/api/search', (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const mode = req.query.mode || 'word';
@@ -81,15 +86,28 @@ app.get('/api/reverse-search', (req, res) => {
   res.json({ results });
 });
 
+// Quiz routes
 app.get('/api/quiz', (req, res) => {
-  res.json([
-    {
-      id: 1,
-      question: 'Lasting for a very short time.',
-      options: ['ephemeral', 'lucid', 'tenacious', 'pragmatic'],
-      answer: 'ephemeral',
-    },
-  ]);
+  if (mockWords.length < 4) {
+    return res.status(400).json({ error: 'Not enough words for quiz' });
+  }
+
+  const correctWord = mockWords[Math.floor(Math.random() * mockWords.length)];
+
+  const otherWords = mockWords
+    .filter((item) => item.word !== correctWord.word)
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3)
+    .map((item) => item.word);
+
+  const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
+
+  res.json({
+    id: correctWord.id,
+    question: correctWord.definition,
+    options,
+    answer: correctWord.word,
+  });
 });
 
 app.post('/api/quiz/result', (req, res) => {
@@ -97,6 +115,7 @@ app.post('/api/quiz/result', (req, res) => {
   res.json({ success: true, received: true, score, total });
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

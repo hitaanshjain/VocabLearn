@@ -1,15 +1,37 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function ReverseDict() {
   const [searchText, setSearchText] = useState('');
+  const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
-  const savedWords = JSON.parse(localStorage.getItem('words')) || [];
+  useEffect(() => {
+    const fetchResults = async () => {
+      if (searchText.trim() === '') {
+        setResults([]);
+        return;
+      }
 
-  const filteredWords = savedWords.filter((wordObj) =>
-    wordObj.definition.toLowerCase().includes(searchText.toLowerCase())
-  );
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/reverse-search?q=${encodeURIComponent(searchText)}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch reverse search results');
+        }
+
+        const data = await response.json();
+        setResults(data.results);
+      } catch (error) {
+        console.error('Error fetching reverse search results:', error);
+        setResults([]);
+      }
+    };
+
+    fetchResults();
+  }, [searchText]);
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
@@ -32,10 +54,11 @@ function ReverseDict() {
         }}
       >
         {searchText.trim() !== '' ? (
-          filteredWords.length > 0 ? (
-            filteredWords.map((wordObj) => (
+          results.length > 0 ? (
+            results.map((wordObj) => (
               <button
                 key={wordObj.id}
+                type="button"
                 onClick={() => navigate(`/word/${wordObj.id}`)}
               >
                 {wordObj.word}

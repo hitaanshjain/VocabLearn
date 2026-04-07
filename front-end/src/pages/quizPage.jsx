@@ -1,50 +1,33 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-function shuffleArray(array) {
-  const newArray = [...array];
-
-  for (let i = newArray.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-
-  return newArray;
-}
 
 function QuizPage() {
   const navigate = useNavigate();
-
-  const questions = useMemo(() => {
-    const savedWords = JSON.parse(localStorage.getItem('words')) || [];
-
-    if (savedWords.length < 4) {
-      return [];
-    }
-
-    const shuffledWords = shuffleArray(savedWords);
-    const chosenWords = shuffledWords.slice(0, 5);
-
-    return chosenWords.map((wordObj) => {
-      const wrongAnswers = shuffleArray(
-        savedWords.filter((item) => item.word !== wordObj.word)
-      )
-        .slice(0, 3)
-        .map((item) => item.word);
-
-      const options = shuffleArray([wordObj.word, ...wrongAnswers]);
-
-      return {
-        id: wordObj.id || wordObj.word,
-        question: wordObj.definition,
-        options,
-        answer: wordObj.word,
-      };
-    });
-  }, []);
-
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/quiz');
+
+        if (!response.ok) {
+          throw new Error('Could not load quiz');
+        }
+
+        const data = await response.json();
+
+        const quizQuestions = Array.isArray(data) ? data : [data];
+        setQuestions(quizQuestions);
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchQuiz();
+  }, []);
 
   const handleAnswer = (choice) => {
     const correctAnswer = questions[currentQuestion].answer;
@@ -69,11 +52,20 @@ function QuizPage() {
     }
   };
 
+  if (error) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <h1>Quiz</h1>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   if (questions.length === 0) {
     return (
       <div style={{ padding: '40px', textAlign: 'center' }}>
         <h1>Quiz</h1>
-        <p>You need at least 4 words in your word bank first.</p>
+        <p>Loading quiz...</p>
       </div>
     );
   }
@@ -96,7 +88,7 @@ function QuizPage() {
         }}
       >
         {question.options.map((option) => (
-          <button key={option} onClick={() => handleAnswer(option)}>
+          <button key={option} type="button" onClick={() => handleAnswer(option)}>
             {option}
           </button>
         ))}
