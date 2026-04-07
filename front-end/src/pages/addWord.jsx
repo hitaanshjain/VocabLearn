@@ -4,35 +4,44 @@ import { useNavigate } from 'react-router-dom';
 function AddWord() {
   const [word, setWord] = useState('');
   const [definition, setDefinition] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!word.trim() || !definition.trim()) {
+      setError('Please enter both a word and a definition.');
       return;
     }
 
-    const savedWords = JSON.parse(localStorage.getItem('words')) || [];
+    try {
+      const response = await fetch('http://localhost:3000/api/words', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          word: word.trim(),
+          definition: definition.trim(),
+        }),
+      });
 
-    const newWord = {
-      id: Date.now(),
-      word: word.trim(),
-      definition: definition.trim(),
-      correctCount: 0,
-    };
+      if (!response.ok) {
+        throw new Error('Failed to save word.');
+      }
 
-    savedWords.push(newWord);
-    localStorage.setItem('words', JSON.stringify(savedWords));
-
-    setWord('');
-    setDefinition('');
-
-    navigate('/word-list');
+      setWord('');
+      setDefinition('');
+      setError('');
+      navigate('/word-list');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center'}}>
+    <div style={{ padding: '40px', textAlign: 'center' }}>
       <h1>Add Word</h1>
 
       <form
@@ -60,6 +69,8 @@ function AddWord() {
         />
 
         <button type="submit">Save Word</button>
+
+        {error && <p>{error}</p>}
       </form>
     </div>
   );

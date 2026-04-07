@@ -8,16 +8,9 @@ import Header from './components/header.jsx';
 import QuizPage from './pages/quizPage.jsx';
 import QuizResults from './pages/quizResults.jsx';
 import AddWord from './pages/addWord.jsx';
-<<<<<<< ours
-import ReverseDict from './pages/reverseDict.jsx';
 import WordList from './pages/wordList.jsx';
 import WordPage from './pages/wordPage.jsx';
-=======
-import WordList from './pages/wordList.jsx';
-import WordPage from './pages/wordPage.jsx';
-import ReverseSearch from "./pages/reverseSearch";
 import SearchWord from './pages/searchWord.jsx';
->>>>>>> theirs
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,18 +24,14 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/quiz-results" element={<QuizResults />} />
-<<<<<<< ours
-        <Route path="/add-word" element={<AddWord />} />
-        <Route path="/reverse-dict" element={<ReverseDict />} />
-        <Route path="/word-list" element={<WordList />} />
-        <Route path="/word/:id" element={<WordPage />} />
-=======
         <Route path="/word-list" element={<WordList />} />
         <Route path="/word/:id" element={<WordPage />} />
         <Route path="/search" element={<SearchWord />} />
-        <Route path="/add-word" element={<AddWord/>} />
-        <Route path="/reverse-dict" element={<Navigate to="/search?mode=definition" replace />} />
->>>>>>> theirs
+        <Route path="/add-word" element={<AddWord />} />
+        <Route
+          path="/reverse-dict"
+          element={<Navigate to="/search?mode=definition" replace />}
+        />
       </Routes>
     </>
   );
