@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 function Home() {
     const navigate = useNavigate();

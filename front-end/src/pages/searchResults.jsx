@@ -16,10 +16,6 @@ function SearchResults() {
           `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`
         );
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch search results');
-        }
-
         const data = await response.json();
         setResults(data.results || []);
       } catch (err) {
@@ -30,7 +26,7 @@ function SearchResults() {
     if (query) {
       fetchResults();
     }
-  }, [query]);
+  }, [query, mode]);
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>

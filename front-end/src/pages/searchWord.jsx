@@ -10,18 +10,25 @@ const SearchWord = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!query.trim()) { setFilteredWords([]); return; }
     const fetchResults = async () => {
-        const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`);
-        const data = await res.json();
-        setFilteredWords(data.results || []);
+      if (!query.trim()) {
+        setFilteredWords([]);
+        return;
+      }
+
+      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`);
+      const data = await res.json();
+      setFilteredWords(data.results || []);
     };
+
     fetchResults();
   }, [query, mode]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      return;
+    }
     navigate(`/results?q=${encodeURIComponent(query)}&mode=${mode}`);
   };
 

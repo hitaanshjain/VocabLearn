@@ -21,6 +21,10 @@ function Login({ setIsLoggedIn }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
         });
+        // Response will be used to validate username and password
+        if (!response.ok) {
+          throw new Error('Failed to login');
+        }
 
         setIsLoggedIn(true);
         navigate("/home");
