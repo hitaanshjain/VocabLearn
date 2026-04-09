@@ -90,12 +90,12 @@ app.get('/api/reverse-search', (req, res) => {
 
 // Quiz routes
 app.get('/api/quiz', (req, res) => {
-  if (mockWords.length < 4) {
+  if (mockWords.length < 5) {
     return res.status(400).json({ error: 'Not enough words for quiz' });
   }
 
   const shuffled = [...mockWords].sort(() => 0.5 - Math.random());
-  const questionWords = shuffled.slice(0, 4);
+  const questionWords = shuffled.slice(0, 5);
 
   const questions = questionWords.map((correctWord) => {
     const otherWords = mockWords

@@ -69,7 +69,7 @@ const SearchWord = () => {
               <div
                 key={i}
                 className="search-result-item"
-                onClick={() => navigate(`/results?q=${encodeURIComponent(w.word)}&mode=word`)}
+                onClick={() => navigate(`/word/${w.id}`)}
               >
                 <strong>{w.word}</strong>
                 <span>{w.definition}</span>

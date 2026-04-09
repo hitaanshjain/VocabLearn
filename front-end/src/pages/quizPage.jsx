@@ -71,6 +71,7 @@ function QuizPage() {
   }
 
   const question = questions[currentQuestion];
+  const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
@@ -97,6 +98,26 @@ function QuizPage() {
       <p>
         Question {currentQuestion + 1} of {questions.length}
       </p>
+      <div
+      style={{
+        width: '100%',
+        maxWidth: '420px',
+        height: '10px',
+        margin: '16px auto 20px',
+        backgroundColor: '#e5e7eb',
+        borderRadius: '999px',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          width: `${progressPercent}%`,
+          height: '100%',
+          backgroundColor: '#111827',
+          transition: 'width 200ms ease',
+        }}
+      />
+    </div>
     </div>
   );
 }
