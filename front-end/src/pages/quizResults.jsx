@@ -32,7 +32,11 @@ function QuizResults() {
       <h2>
         You got {score} out of {total}
       </h2>
-      <button onClick={() => navigate('/quiz')} className="try-again-button">
+      <button
+        onClick={() => navigate('/quiz')}
+        className="try-again-button"
+        style={{ marginTop: '44px' }}
+      >
         Try Again
       </button>
     </div>
