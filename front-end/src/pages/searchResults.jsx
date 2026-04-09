@@ -7,17 +7,14 @@ function SearchResults() {
   const [error, setError] = useState('');
 
   const query = new URLSearchParams(location.search).get('q') || '';
+  const mode = new URLSearchParams(location.search).get('mode') || 'word';
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/search?q=${encodeURIComponent(query)}`
+          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`
         );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch search results');
-        }
 
         const data = await response.json();
         setResults(data.results || []);
@@ -29,7 +26,7 @@ function SearchResults() {
     if (query) {
       fetchResults();
     }
-  }, [query]);
+  }, [query, mode]);
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>

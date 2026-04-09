@@ -4,19 +4,24 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-  "start": "node app.js"
-},
+    "start": "node app.js",
+    "test": "c8 mocha"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "c8": "^11.0.0",
+    "chai": "^6.2.2",
     "eslint": "^10.1.0",
-    "globals": "^17.4.0"
+    "globals": "^17.4.0",
+    "mocha": "^11.7.5"
   }
 }
