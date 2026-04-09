@@ -94,22 +94,27 @@ app.get('/api/quiz', (req, res) => {
     return res.status(400).json({ error: 'Not enough words for quiz' });
   }
 
-  const correctWord = mockWords[Math.floor(Math.random() * mockWords.length)];
+  const shuffled = [...mockWords].sort(() => 0.5 - Math.random());
+  const questionWords = shuffled.slice(0, 4);
 
-  const otherWords = mockWords
-    .filter((item) => item.word !== correctWord.word)
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 3)
-    .map((item) => item.word);
+  const questions = questionWords.map((correctWord) => {
+    const otherWords = mockWords
+      .filter((item) => item.word !== correctWord.word)
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3)
+      .map((item) => item.word);
 
-  const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
+    const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
 
-  res.json({
-    id: correctWord.id,
-    question: correctWord.definition,
-    options,
-    answer: correctWord.word,
+    return {
+      id: correctWord.id,
+      question: correctWord.definition,
+      options,
+      answer: correctWord.word,
+    };
   });
+
+  res.json(questions);
 });
 
 app.post('/api/quiz/result', (req, res) => {
