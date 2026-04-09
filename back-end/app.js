@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 app.use(express.json());
 app.use(cors());
@@ -18,7 +20,7 @@ const mockWords = [
 
 // Redirect root to frontend
 app.get('/', (req, res) => {
-  res.redirect('http://localhost:5173/login');
+  res.redirect(`${FRONTEND_URL}/login`);
 });
 
 // Auth routes

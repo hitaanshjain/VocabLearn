@@ -1,47 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../styles/searchWord.css';
-
-function match(queryDefinition, savedDefinition) {
-  const queryTokens = new Set(queryDefinition.toLowerCase().split(" "));
-  const savedTokens = new Set(savedDefinition.toLowerCase().split(" "));
-
-  if (queryTokens.size === 0 || savedTokens.size === 0) return 0;
-
-  const overlap = [...queryTokens].reduce((count, token) => {
-    return count + (savedTokens.has(token) ? 1 : 0);
-  }, 0);
-
-  return overlap / Math.max(queryTokens.size, savedTokens.size);
-}
 
 const SearchWord = () => {
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState(searchParams.get('mode') || 'word');
   const [query, setQuery] = useState('');
+  const [filteredWords, setFilteredWords] = useState([]);
   const navigate = useNavigate();
 
-  const savedWords = JSON.parse(localStorage.getItem('words')) || [];
-
-  const filteredWords = savedWords
-    .map(w => ({ ...w, score: match(query, w.definition) }))
-    .filter(w =>
-      mode === 'word'
-        ? w.word.toLowerCase().startsWith(query.toLowerCase())
-        : w.score >= 0.2
-    )
-    .sort((a, b) => b.score - a.score);
+  useEffect(() => {
+    if (!query.trim()) { setFilteredWords([]); return; }
+    const fetchResults = async () => {
+        const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`);
+        const data = await res.json();
+        setFilteredWords(data.results || []);
+    };
+    fetchResults();
+  }, [query, mode]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (!query.trim()) return;
     navigate(`/results?q=${encodeURIComponent(query)}&mode=${mode}`);
-  };
-
-  const handleGenerate = () => {
-    if (savedWords.length === 0) return;
-    const random = savedWords[Math.floor(Math.random() * savedWords.length)];
-    navigate(`/word/${random.word}`);
   };
 
   return (

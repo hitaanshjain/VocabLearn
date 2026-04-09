@@ -2,24 +2,34 @@ import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
 function Login({ setIsLoggedIn }) {
-
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
   
-    const handleSubmit = event => {
+    const handleSubmit = async event => {
       event.preventDefault();
       if (!username || !password) {
           const m = username ? "Please enter password." : "Please enter username.";
           setMessage(m);
         return;
       }
-      setIsLoggedIn(true);
-      navigate("/home");
+
+      try {
+        const response = await fetch('http://localhost:3000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+
+        setIsLoggedIn(true);
+        navigate("/home");
+      } catch (err) {
+        setMessage(err.message);
+      }
     };
-  
+
+
     return (
       <div className="container">
         <h1>Log In</h1>

@@ -22,5 +22,51 @@ Please refer to our [CONTRIBUTING.md](https://github.com/agile-students-spring20
 
 ## Building and Testing
 
-More information on this later.
+### Prerequisites
+
+1. Install Node.js 18+ (includes npm).
+2. Clone this repository.
+
+### 1) Back-end setup and run
+
+From the project root:
+
+```bash
+cd back-end
+npm install
+```
+
+Create a `.env` file in `back-end/`:
+
+```env
+PORT=3000
+FRONTEND_URL=http://localhost:5173
+```
+
+Start the API server:
+
+```bash
+npm start
+```
+
+Back-end runs at `http://localhost:3000`.
+
+### 2) Front-end setup and run
+
+Open a second terminal. From the project root:
+
+```bash
+cd front-end
+npm install
+npm run dev
+```
+
+Front-end runs at `http://localhost:5173`.
+
+### Quick run checklist
+
+1. Start back-end first (`back-end`, `npm start`).
+2. Start front-end second (`front-end`, `npm run dev`).
+3. Open `http://localhost:5173` in your browser.
+
 

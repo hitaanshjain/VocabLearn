@@ -9,7 +9,6 @@ function Home() {
         <h1>Home</h1>
 
         <SearchBar />
-
         <div className="button-container">
         <button onClick={() => navigate('/add-word')}>
             Add Word
