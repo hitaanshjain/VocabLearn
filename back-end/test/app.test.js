@@ -51,3 +51,38 @@ describe('GET /api/quiz', () => {
     expect(res.body).to.have.lengthOf(5);
   });
 });
+
+describe('POST /api/words', () => {
+  it('should create a new word + definition and store it', async() => {
+    const res = await request(app).post('/api/words').send({word: 'temporal', definition: 'relating to time'});
+    expect(res.status).to.equal(201);
+    expect(res.body).to.be.an('object');
+    expect(res.body).to.include({word: 'temporal', definition: 'relating to time'});
+    expect(res.body).to.have.property('correctCount', 0);
+    expect(res.body).to.have.property('id');
+  });
+});
+
+describe('POST /api/quiz/result', () => {
+  it('should accept and echo quiz score', async () => {
+    const res = await request(app).post('/api/quiz/result').send({ score: 4, total: 5 });
+    expect(res.status).to.equal(200);
+    expect(res.body).to.deep.equal({
+      success: true,
+      received: true,
+      score: 4,
+      total: 5,
+    });
+  });
+});
+
+describe('GET /api/reverse-search', () => {
+  it('should return results matching definition text', async () => {
+    const res = await request(app)
+      .get('/api/reverse-search')
+      .query({ q: 'm' });
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('results');
+    expect(res.body.results).to.be.an('array');
+  });
+});
