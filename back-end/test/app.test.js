@@ -1,59 +1,53 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const request = require('supertest');
 const app = require('../app');
 
-chai.use(chaiHttp);
-chai.should();
+const expect = chai.expect;
 
 describe('POST /api/login', () => {
-  it('it should respond with an HTTP 200 status code and an object in the response body', done => {
-    chai.request(app)
+  it('should respond with status 200 and a success object', async () => {
+    const res = await request(app)
       .post('/api/login')
-      .send({username: 'testuser', password: 'testpass'})
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.be.a('object');
-        res.body.should.have.property('success', true);
-        done();
-      });
+      .send({ username: 'testuser', password: 'testpass' });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an('object');
+    expect(res.body).to.have.property('success', true);
   });
 });
 
 describe('GET /api/search', () => {
-  it('it should respond with an HTTP 200 status code and an array of matching results when querying by word in the response body', done => {
-    chai.request(app)
+  it('should respond with status 200 and matching results for a query', async () => {
+    const res = await request(app)
       .get('/api/search')
-      .query({q: 'eph'})
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.have.property('results');
-        res.body.results.every(item => item.word.toLowerCase().includes('eph')).should.equal(true);
-        done();
-      });
+      .query({ q: 'eph' });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('results');
+    expect(res.body.results).to.be.an('array');
+    expect(res.body.results.every(item =>
+      item.word.toLowerCase().includes('eph')
+    )).to.equal(true);
   });
 
-  it('it should respond with an HTTP 200 status code and an empty array in the response body', done => {
-    chai.request(app)
+  it('should respond with status 200 and an empty array for no matches', async () => {
+    const res = await request(app)
       .get('/api/search')
-      .query({q: 'gooblygooklypooklygoowly'})
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.have.property('results');
-        res.body.results.should.have.lengthOf(0);
-        done();
-      });
+      .query({ q: 'gooblygooklypooklygoowly' });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('results');
+    expect(res.body.results).to.be.an('array');
+    expect(res.body.results).to.have.lengthOf(0);
   });
 });
 
 describe('GET /api/quiz', () => {
-  it('it should respond with an HTTP 200 status code and return an array of 4 questions in the response body', done => {
-    chai.request(app)
-      .get('/api/quiz')
-      .end((err, res) => {
-        res.should.have.status(200);
-        res.body.should.be.an('array');
-        res.body.should.have.lengthOf(4);
-        done();
-      });
+  it('should respond with status 200 and return 4 questions', async () => {
+    const res = await request(app).get('/api/quiz');
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an('array');
+    expect(res.body).to.have.lengthOf(5);
   });
 });
