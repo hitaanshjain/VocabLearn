@@ -1,0 +1,38 @@
+const request = require('supertest');
+const { expect } = require('chai');
+const app = require('../app');
+
+describe('Quiz routes', () => {
+  it('GET /api/quiz should return 5 quiz questions', async () => {
+    const res = await request(app).get('/api/quiz');
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an('array');
+    expect(res.body.length).to.equal(5);
+
+    res.body.forEach((question) => {
+      expect(question).to.have.property('id');
+      expect(question).to.have.property('question');
+      expect(question).to.have.property('options');
+      expect(question).to.have.property('answer');
+
+      expect(question.options).to.be.an('array');
+      expect(question.options.length).to.equal(4);
+      expect(question.options).to.include(question.answer);
+    });
+  });
+
+  it('POST /api/quiz/result should accept and return score data', async () => {
+    const res = await request(app)
+      .post('/api/quiz/result')
+      .send({ score: 4, total: 5 });
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.deep.equal({
+      success: true,
+      received: true,
+      score: 4,
+      total: 5,
+    });
+  });
+});
