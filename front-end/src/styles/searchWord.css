@@ -1,0 +1,55 @@
+.search-results {
+    width: 360px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    margin: 16px auto 0;
+  }
+  
+  .search-result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    cursor: pointer;
+    gap: 20px;
+    
+  }
+  
+  .search-result-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .search-result-item span {
+    color: #888;
+    font-size: 0.85rem;
+  }
+  
+  .no-results {
+    padding: 10px;
+    color: #888;
+  }
+
+  .toggle-container {
+    display: flex;
+    width: fit-content;
+    margin: 0 auto 20px;
+  }
+  
+  .toggle-btn {
+    padding: 8px 24px;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  
+  .toggle-active {
+    background: black;
+    color: white;
+  }
+
+  .search-form{
+    flex-direction: column
+  }

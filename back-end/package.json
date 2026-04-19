@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "mocha \"test/**/*.js\"",
-    "coverage": "c8 mocha \"test/**/*.js\""
+    "test": "c8 mocha"
   },
   "keywords": [],
   "author": "",
