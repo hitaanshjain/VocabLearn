@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 
 const app = express();
@@ -29,8 +30,17 @@ app.post('/api/login', (req, res) => {
   res.json({ success: true, username, message: 'Mock login successful' });
 });
 
-app.post('/api/register', (req, res) => {
-  res.json({ success: true, message: 'Mock registration successful' });
+app.post('/api/register', 
+  [
+    body('username').trim().notEmpty().withMessage('Username is required').isLength({max: 50}).withMessage('Username must be 50 characters or fewer'),
+    body('password').trim().notEmpty().withMessage('Password is required').isLength({min: 8, max: 50}).withMessage('Password must be 8 or more characters and 50 or fewer'),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    res.json({ success: true, message: 'Mock registration successful' });
 });
 
 // Words routes
@@ -49,19 +59,30 @@ app.get('/api/words/:id', (req, res) => {
   res.json(word);
 });
 
-app.post('/api/words', (req, res) => {
-  const { word, definition } = req.body;
+app.post('/api/words',
+  [
+    body('word').trim().notEmpty().withMessage('Word is required').isLength({max: 100}).withMessage('Word must be 100 characters or fewer'),
+    body('definition').trim().notEmpty().withMessage('Definition is required').isLength({max: 500}).withMessage('Definition must be 500 characters or fewer'),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  const newWord = {
-    id: mockWords.length + 1,
-    word,
-    definition,
-    correctCount: 0,
-  };
+    const { word, definition } = req.body;
 
-  mockWords.push(newWord);
-  res.status(201).json(newWord);
-});
+    const newWord = {
+      id: mockWords.length + 1,
+      word,
+      definition,
+      correctCount: 0,
+    };
+
+    mockWords.push(newWord);
+    res.status(201).json(newWord);
+  }
+);
 
 // Search routes
 app.get('/api/search', (req, res) => {
