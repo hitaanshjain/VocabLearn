@@ -1,10 +1,16 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const Word = require('./models/Word');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error('MongoDB connection error:', err));
 
 app.use(express.json());
 app.use(cors());
@@ -34,8 +40,13 @@ app.post('/api/register', (req, res) => {
 });
 
 // Words routes
-app.get('/api/words', (req, res) => {
-  res.json(mockWords);
+app.get('/api/words', async (req, res) => {
+  try {
+    const words = await Word.find();
+    res.json(words);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch words' });
+  }
 });
 
 app.get('/api/words/:id', (req, res) => {
@@ -49,20 +60,40 @@ app.get('/api/words/:id', (req, res) => {
   res.json(word);
 });
 
-app.post('/api/words', (req, res) => {
-  const { word, definition } = req.body;
+app.post('/api/words', async (req, res) => {
+  try {
+    const { word, definition } = req.body;
 
-  const newWord = {
-    id: mockWords.length + 1,
-    word,
-    definition,
-    correctCount: 0,
-  };
+    const newWord = new Word({
+      word,
+      definition,
+    });
 
-  mockWords.push(newWord);
-  res.status(201).json(newWord);
+    await newWord.save();
+    res.status(201).json(newWord);
+  } catch (error) {
+    res.status(500).json({ error: 'failed to save word' });
+  }
 });
 
+app.get('/api/seed', async (req, res) => {
+  try {
+    await Word.deleteMany({});
+
+    const seedWords = [
+      { word: 'ephemeral', definition: 'Lasting for a very short time.', correctCount: 0 },
+      { word: 'ubiquitous', definition: 'Present, appearing, or found everywhere.', correctCount: 0 },
+      { word: 'pragmatic', definition: 'Dealing with things sensibly and realistically.', correctCount: 0 },
+      { word: 'lucid', definition: 'Expressed clearly; easy to understand.', correctCount: 0 },
+      { word: 'tenacious', definition: 'Tending to keep a firm hold of something.', correctCount: 0 },
+    ];
+
+    const inserted = await Word.insertMany(seedWords);
+    res.json(inserted);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to seed words' });
+  }
+});
 // Search routes
 app.get('/api/search', (req, res) => {
   const q = (req.query.q || '').toLowerCase();
