@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
+const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 const Word = require('./models/Word');
 
@@ -35,8 +36,17 @@ app.post('/api/login', (req, res) => {
   res.json({ success: true, username, message: 'Mock login successful' });
 });
 
-app.post('/api/register', (req, res) => {
-  res.json({ success: true, message: 'Mock registration successful' });
+app.post('/api/register', 
+  [
+    body('username').trim().notEmpty().withMessage('Username is required').isLength({max: 50}).withMessage('Username must be 50 characters or fewer'),
+    body('password').trim().notEmpty().withMessage('Password is required').isLength({min: 8, max: 50}).withMessage('Password must be 8 or more characters and 50 or fewer'),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    res.json({ success: true, message: 'Mock registration successful' });
 });
 
 // Words routes
