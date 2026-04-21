@@ -1,6 +1,6 @@
-const request = require('supertest');
-const { expect } = require('chai');
-const app = require('../app');
+import request from 'supertest';
+import { expect } from 'chai';
+import app from '../app.js';
 
 describe('Quiz routes', () => {
   it('GET /api/quiz should return 5 quiz questions', async () => {

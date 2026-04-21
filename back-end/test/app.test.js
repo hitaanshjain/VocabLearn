@@ -1,8 +1,6 @@
-const chai = require('chai');
-const request = require('supertest');
-const app = require('../app');
-
-const expect = chai.expect;
+import request from 'supertest';
+import { expect } from 'chai';
+import app from '../app.js';
 
 describe('POST /api/login', () => {
   it('should respond with status 200 and a success object', async () => {
