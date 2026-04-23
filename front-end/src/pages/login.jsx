@@ -46,6 +46,7 @@ function Login({ setIsLoggedIn }) {
           </div>
           {message && <p>{message}</p>}
           <input type="submit" value="Log In" onClick={handleSubmit}/>
+          <input type="button" value="Register" onClick={() => navigate('/register')} />
         </form>
       </div>
     </div>

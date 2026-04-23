@@ -11,6 +11,7 @@ import AddWord from './pages/addWord.jsx';
 import WordList from './pages/wordList.jsx';
 import WordPage from './pages/wordPage.jsx';
 import SearchWord from './pages/searchWord.jsx';
+import Register from './pages/register';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/quiz-results" element={<QuizResults />} />
