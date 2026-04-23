@@ -55,6 +55,7 @@ app.get('/api/words', async (req, res) => {
     const words = await Word.find();
     res.json(words);
   } catch (error) {
+    console.error('GET /api/words error:', error);
     res.status(500).json({ error: 'Failed to fetch words' });
   }
 });
@@ -101,6 +102,7 @@ app.get('/api/seed', async (req, res) => {
     const inserted = await Word.insertMany(seedWords);
     res.json(inserted);
   } catch (error) {
+    console.error('GET /api/seed error:', error);
     res.status(500).json({ error: 'Failed to seed words' });
   }
 });
