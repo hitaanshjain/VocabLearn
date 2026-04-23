@@ -7,7 +7,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Word from './models/Word.js';
 import User from './models/User.js';
-
+import { lookupWord } from './api/dictApi.js';
+import { handleReverseDict } from './api/llmapi.js';
 dotenv.config();
 
 const app = express();
@@ -29,18 +30,20 @@ function authenticateToken(req, res, next) {
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
-  } catch (_error) {
+  } catch (error) {
+    console.log('JWT verify failed:', error.name, error.message);
+    console.log('Token received:', token);  // also log the token
     res.status(403).json({ error: 'Invalid token'});
   }
 }
 
 // Mock data
 const mockWords = [
-  { id: 1, word: 'ephemeral', definition: 'Lasting for a very short time.', correctCount: 0 },
-  { id: 2, word: 'ubiquitous', definition: 'Present, appearing, or found everywhere.', correctCount: 0 },
-  { id: 3, word: 'pragmatic', definition: 'Dealing with things sensibly and realistically.', correctCount: 0 },
-  { id: 4, word: 'lucid', definition: 'Expressed clearly; easy to understand.', correctCount: 0 },
-  { id: 5, word: 'tenacious', definition: 'Tending to keep a firm hold of something.', correctCount: 0 },
+  { id: 1, word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
+  { id: 2, word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
+  { id: 3, word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
+  { id: 4, word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
+  { id: 5, word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
 ];
 
 // Redirect root to frontend
@@ -120,12 +123,18 @@ app.get('/api/words/:id', async (req, res) => {
 
 app.post('/api/words', authenticateToken, async (req, res) => {
   try {
-    const { word, definition } = req.body;
+    const { word } = req.body;
 
+    const result = await lookupWord(word);
+    if (!result) {
+      return res.status(404).json({ error: 'Word not found in dictionary' });
+    }
     const newWord = new Word({
       word,
-      definition,
+      partOfSpeech: result.partOfSpeech,
+      definitions: result.definitions,
     });
+
 
     await newWord.save();
     res.status(201).json(newWord);
@@ -139,11 +148,11 @@ app.get('/api/seed', async (req, res) => {
     await Word.deleteMany({});
 
     const seedWords = [
-      { word: 'ephemeral', definition: 'Lasting for a very short time.', correctCount: 0 },
-      { word: 'ubiquitous', definition: 'Present, appearing, or found everywhere.', correctCount: 0 },
-      { word: 'pragmatic', definition: 'Dealing with things sensibly and realistically.', correctCount: 0 },
-      { word: 'lucid', definition: 'Expressed clearly; easy to understand.', correctCount: 0 },
-      { word: 'tenacious', definition: 'Tending to keep a firm hold of something.', correctCount: 0 },
+      { word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
+      { word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
+      { word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
+      { word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
+      { word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
     ];
 
     const inserted = await Word.insertMany(seedWords);
@@ -161,7 +170,9 @@ app.get('/api/search', async (req, res) => {
     const words = await Word.find();
     const results = words.filter((item) => {
       if (mode === 'definition') {
-        return item.definition.toLowerCase().includes(q);
+        return (item.definitions || []).some((definition) =>
+          definition.toLowerCase().includes(q)
+        );
       }
       return item.word.toLowerCase().includes(q);
     });
@@ -174,11 +185,10 @@ app.get('/api/search', async (req, res) => {
 app.get('/api/reverse-search', async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   try {
-    const words = await Word.find();
-    const results = words.filter((item) =>
-      item.definition.toLowerCase().includes(q)
-    );
-    res.json({ results });
+    const words = await Word.find({}, { word: 1, _id: 0 }).lean();
+    const candidates = words.map((item) => item.word);
+    const result = await handleReverseDict(q, candidates);
+    res.json({ result });
   } catch (error) {
     res.status(500).json({ error: 'Search failed' });
   }
@@ -205,7 +215,7 @@ app.get('/api/quiz', async (req, res) => {
       const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
       return {
         id: correctWord._id,
-        question: correctWord.definition,
+        question: correctWord.definitions?.[0] || 'No definition available',
         options,
         answer: correctWord.word,
       };

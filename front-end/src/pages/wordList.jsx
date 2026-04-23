@@ -21,14 +21,10 @@ function WordList() {
 
   if (words.length === 0) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
+      <div className="page">
         <h1>Word Bank</h1>
-        <p>No words in your word bank just yet!</p>
-        <button
-          type="button"
-          onClick={() => navigate('/add-word')}
-          style={{ marginTop: '16px' }}
-        >
+        <p className="muted">No words in your word bank just yet!</p>
+        <button type="button" onClick={() => navigate('/add-word')}>
           Add Word
         </button>
       </div>
@@ -36,39 +32,21 @@ function WordList() {
   }
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div className="page">
       <h1>Word Bank</h1>
-
-      <div
-        style={{
-          maxWidth: '700px',
-          margin: '0 auto',
-          maxHeight: '70vh',
-          overflowY: 'auto',
-          border: '1px solid #d9d9d9',
-          borderRadius: '8px',
-          padding: '8px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-        }}
-      >
+      <div className="card scroll-panel list-column">
         {words.map((wordObj) => (
           <button
-            key={wordObj.id}
+            key={wordObj._id}
             type="button"
-            onClick={() => navigate(`/word/${wordObj.id}`)}
+            onClick={() => navigate(`/word/${wordObj._id}`)}
           >
             {wordObj.word}
           </button>
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={() => navigate('/add-word')}
-        style={{ margin: '16px auto' }}
-      >
+      <button type="button" onClick={() => navigate('/add-word')}>
         Add Word
       </button>
     </div>

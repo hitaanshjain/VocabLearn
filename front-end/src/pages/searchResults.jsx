@@ -29,27 +29,19 @@ function SearchResults() {
   }, [query, mode]);
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div className="page">
       <h1>Search Results</h1>
-      <p>Query: {query}</p>
+      <p className="muted">Query: {query}</p>
 
-      {error && <p>{error}</p>}
+      {error && <p className="inline-error">{error}</p>}
 
       {!error && results.length === 0 ? (
-        <p>No results found.</p>
+        <p className="muted">No results found.</p>
       ) : (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            maxWidth: '400px',
-            margin: '20px auto',
-          }}
-        >
+        <div className="container list-column">
           {results.map((item) => (
-            <Link key={item.id} to={`/word/${item.id}`}>
-              {item.word} — {item.definition}
+            <Link key={item._id} to={`/word/${item._id}`}>
+              {item.word} — {item.definitions?.[0] || 'No definition available'}
             </Link>
           ))}
         </div>

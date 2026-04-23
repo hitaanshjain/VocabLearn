@@ -51,11 +51,13 @@ describe('GET /api/quiz', () => {
 });
 
 describe('POST /api/words', () => {
-  it('should create a new word + definition and store it', async() => {
-    const res = await request(app).post('/api/words').send({word: 'temporal', definition: 'relating to time'});
+  it('should create a new word with definitions and store it', async() => {
+    const res = await request(app).post('/api/words').send({word: 'temporal'});
     expect(res.status).to.equal(201);
     expect(res.body).to.be.an('object');
-    expect(res.body).to.include({word: 'temporal', definition: 'relating to time'});
+    expect(res.body).to.have.property('word', 'temporal');
+    expect(res.body).to.have.property('definitions');
+    expect(res.body.definitions).to.be.an('array');
     expect(res.body).to.have.property('correctCount', 0);
     expect(res.body).to.have.property('id');
   });
