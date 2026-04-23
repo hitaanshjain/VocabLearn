@@ -14,12 +14,20 @@ function AddWord() {
       setError('Please enter both a word and a definition.');
       return;
     }
+    const token = localStorage.getItem('token');
+
+    if (!token){
+      setError('Please log in first.');
+      navigate('/login');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:3000/api/words', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           word: word.trim(),
@@ -27,8 +35,10 @@ function AddWord() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to save word.');
+        throw new Error(data.error || 'Failed to save word.');
       }
 
       setWord('');
