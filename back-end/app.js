@@ -18,8 +18,21 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+
 app.use(express.json());
 app.use(cors());
+
+function authenticateToken(req, res, next) {
+  const auth = req.headers['authorization'];
+  const token = auth && auth.split(' ')[1];
+  if (!token) return res.status(401).json({error: 'Access denied'});
+  try {
+    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  } catch (_error) {
+    res.status(403).json({ error: 'Invalid token'});
+  }
+}
 
 // Mock data
 const mockWords = [
@@ -36,10 +49,28 @@ app.get('/', (req, res) => {
 });
 
 // Auth routes
-app.post('/api/login', (req, res) => {
-  const { username } = req.body;
-  res.json({ success: true, username, message: 'Mock login successful' });
-});
+app.post('/api/login',
+  [
+    body('username').trim().notEmpty().withMessage('Username is required'),
+    body('password').trim().notEmpty().withMessage('Password is required'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({errors: errors.array()});
+    }
+    const user = await User.findOne({username: req.body.username});
+    if (!user){return res.status(401).json({error: 'Invalid username'});}
+    const pass = await bcrypt.compare(req.body.password, user.password);
+    if (!pass){return res.status(401).json({error: 'Invalid password'});}
+    const token = jwt.sign(
+      {id: user._id, username: user.username},
+      process.env.JWT_SECRET,
+      {expiresIn: '24h'}
+    );
+    res.json({success: true, token});
+  }
+);
 
 app.post('/api/register', 
   [
@@ -86,7 +117,7 @@ app.get('/api/words/:id', async (req, res) => {
   }
 });
 
-app.post('/api/words', async (req, res) => {
+app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word, definition } = req.body;
 
