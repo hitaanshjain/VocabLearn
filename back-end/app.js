@@ -1,9 +1,14 @@
-const mongoose = require('mongoose');
-const express = require('express');
-const cors = require('cors');
-const { body, validationResult } = require('express-validator');
-require('dotenv').config();
-const Word = require('./models/Word');
+import mongoose from 'mongoose';
+import express from 'express';
+import cors from 'cors';
+import { body, validationResult } from 'express-validator';
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import Word from './models/Word.js';
+import User from './models/User.js';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,15 +46,26 @@ app.post('/api/register',
     body('username').trim().notEmpty().withMessage('Username is required').isLength({max: 50}).withMessage('Username must be 50 characters or fewer'),
     body('password').trim().notEmpty().withMessage('Password is required').isLength({min: 8, max: 50}).withMessage('Password must be 8 or more characters and 50 or fewer'),
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    res.json({ success: true, message: 'Mock registration successful' });
+    try {
+      const existing = await User.findOne({ username: req.body.username });
+      if (existing) {return res.status(409).json({ error: 'Username already taken' });}
+      const user = new User({
+        username: req.body.username,
+        password: await bcrypt.hash(req.body.password, 12),
+      });
+      await user.save();
+      res.json({ success: true, message: 'Registration successful' });
+    } catch (error) {
+      res.status(500).json({ error: 'Registration failed' });
+    }
 });
 
-// Words routes
+
 app.get('/api/words', async (req, res) => {
   try {
     const words = await Word.find();
@@ -60,15 +76,15 @@ app.get('/api/words', async (req, res) => {
   }
 });
 
-app.get('/api/words/:id', (req, res) => {
-  const wordId = Number(req.params.id);
-  const word = mockWords.find((w) => w.id === wordId);
-
-  if (!word) {
-    return res.status(404).json({ error: 'Word not found' });
+app.get('/api/words/:id', async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const word = await Word.findById(wordId);
+    if (!word) {return res.status(404).json({ error: 'Word not found' });}
+    res.json(word);
+  } catch (error) {
+    res.status(404).json({ error: 'Word not found' });
   }
-
-  res.json(word);
 });
 
 app.post('/api/words', async (req, res) => {
@@ -107,57 +123,67 @@ app.get('/api/seed', async (req, res) => {
   }
 });
 // Search routes
-app.get('/api/search', (req, res) => {
+app.get('/api/search', async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const mode = req.query.mode || 'word';
-
-  const results = mockWords.filter((item) => {
-    if (mode === 'definition') {
-      return item.definition.toLowerCase().includes(q);
-    }
-    return item.word.toLowerCase().includes(q);
-  });
-
-  res.json({ query: q, mode, results });
+  try {
+    const words = await Word.find();
+    const results = words.filter((item) => {
+      if (mode === 'definition') {
+        return item.definition.toLowerCase().includes(q);
+      }
+      return item.word.toLowerCase().includes(q);
+    });
+    res.json({ query: q, mode, results });
+  } catch (error) {
+    res.status(500).json({ error: 'Search failed' });
+  }
 });
 
-app.get('/api/reverse-search', (req, res) => {
+app.get('/api/reverse-search', async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
-
-  const results = mockWords.filter((item) =>
-    item.definition.toLowerCase().includes(q)
-  );
-
-  res.json({ results });
+  try {
+    const words = await Word.find();
+    const results = words.filter((item) =>
+      item.definition.toLowerCase().includes(q)
+    );
+    res.json({ results });
+  } catch (error) {
+    res.status(500).json({ error: 'Search failed' });
+  }
 });
 
 // Quiz routes
-app.get('/api/quiz', (req, res) => {
-  if (mockWords.length < 5) {
-    return res.status(400).json({ error: 'Not enough words for quiz' });
+app.get('/api/quiz', async (req, res) => {
+  try {
+    const words = await Word.find();
+    if (words.length < 5) {
+      return res.status(400).json({ error: 'Not enough words for quiz' });
+    }
+
+    const shuffled = [...words].sort(() => 0.5 - Math.random());
+    const questionWords = shuffled.slice(0, 5);
+
+    const questions = questionWords.map((correctWord) => {
+      const otherWords = words
+        .filter((item) => item.word !== correctWord.word)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map((item) => item.word);
+
+      const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
+      return {
+        id: correctWord._id,
+        question: correctWord.definition,
+        options,
+        answer: correctWord.word,
+      };
+    });
+
+    res.json(questions);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate quiz' });
   }
-
-  const shuffled = [...mockWords].sort(() => 0.5 - Math.random());
-  const questionWords = shuffled.slice(0, 5);
-
-  const questions = questionWords.map((correctWord) => {
-    const otherWords = mockWords
-      .filter((item) => item.word !== correctWord.word)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3)
-      .map((item) => item.word);
-
-    const options = [...otherWords, correctWord.word].sort(() => 0.5 - Math.random());
-
-    return {
-      id: correctWord.id,
-      question: correctWord.definition,
-      options,
-      answer: correctWord.word,
-    };
-  });
-
-  res.json(questions);
 });
 
 app.post('/api/quiz/result', (req, res) => {
@@ -170,4 +196,4 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+export default app;
