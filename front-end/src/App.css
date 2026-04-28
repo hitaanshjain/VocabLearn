@@ -1,76 +1,145 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #111827;
+  background-color: #f5efe3;
 }
 
-/* styles shared by all screens within the app */
-
-.container {
-  border: 1px solid black;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0;
+* {
+  box-sizing: border-box;
 }
 
-/* each screen has a main content area with an image, and a paragraph */
-.main-content {
-  margin: 20px;
-  display: flex; /* use css flexbox for elements inside of this element */
-}
-
-.main-content p,
-.main-content img {
-  flex: auto;
-  align-items: center;
-}
-
-.main-content p {
-  margin-left: 20px;
-}
-
-.main-content img {
-  object-fit: contain;
-}
-
-.main-content form {
-  flex: auto;
-  margin-left: 20px;
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:  #f5efe3;
 }
 
 h1 {
-  font-family: georgia;
-  margin-left: 20px;
+  margin: 0 0 16px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 2rem;
 }
 
 p {
-  font-family: 'DM Sans', sans-serif;
+  margin: 0;
+  line-height: 1.5;
 }
 
+a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
 
-/* styles for form text fields */
+a:hover {
+  text-decoration: underline;
+}
+
+.page {
+  max-width: 840px;
+  margin: 24px auto;
+  padding: 0 16px 24px;
+  text-align: center;
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+}
+
+.main-content {
+  display: flex;
+  justify-content: center;
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.card {
+  max-width: 640px;
+  margin: 20px auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+}
+
+.scroll-panel {
+  max-width: 700px;
+  margin: 0 auto;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.list-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+.inline-error {
+  color: #b91c1c;
+  font-weight: 500;
+}
+
 input[type="text"],
 input[type="password"] {
-  padding: 10px;
-  margin: 10px 0;
-  width: 200px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
 }
 
-/* styles for the form submit button */
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #2563eb;
+  outline: 2px solid #bfdbfe;
+  outline-offset: 1px;
+}
+
 input[type="submit"] {
-  margin-top: 20px;
-  background-color: black;
-  color: white;
-  border: 1px solid white;
-  padding: 10px;
-  font-size: 20px;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
-/* changes to the submit button when it is being clicked */
-input[type="submit"]:active {
-  color: black;
-  background-color: white;
-  border-color: black;
+input[type="button"] {
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
 }
 
+.definition-list {
+  text-align: left;
+  margin: 12px auto 0;
+  padding-left: 24px;
+  max-width: 640px;
+}

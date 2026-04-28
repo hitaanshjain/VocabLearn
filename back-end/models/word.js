@@ -7,14 +7,22 @@ const WordSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  definition: {
+  partOfSpeech:{
     type: String,
+      required: true,
+  },
+  definitions: {
+    type: [String],
     required: true,
-    trim: true,},
+  },
   correctCount: {
     type: Number,
     default: 0,
   },
+  totalTested: {
+    type: Number,
+    default: 0
+  }
 });
 
 export default mongoose.model('Word', WordSchema);

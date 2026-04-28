@@ -3,14 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Menu from './Menu.jsx';
 import '../styles/header.css';
 
-const Header = ({ isLoggedIn, setIsLoggedIn }) => {
+const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
-  const isLoginPage = (location.pathname === '/login');
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setUsername('');
     navigate('/login');
   };
 
@@ -20,7 +21,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
     <header className="header">
       <div className="header-left">
-        {!isLoginPage && (
+        {!isAuthPage && (
           <>
             <button onClick={() => setDrawerOpen(true)}>&#9776;</button>
             <button onClick={() => navigate('/home')}>Home</button>
@@ -32,9 +33,10 @@ const Header = ({ isLoggedIn, setIsLoggedIn }) => {
 
       <div className="header-right">
         {!isLoggedIn ? (
-          !isLoginPage && <button onClick={() => navigate('/login')}>Login</button>
+          !isAuthPage && <button onClick={() => navigate('/login')}>Login</button>
         ) : (
           <>
+            <span className="welcome-text">{`Welcome, ${username}`}</span>
             <button onClick={handleLogout}>Logout</button>
           </>
         )}
