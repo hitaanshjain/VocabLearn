@@ -100,9 +100,9 @@ app.post('/api/register',
 });
 
 
-app.get('/api/words', async (req, res) => {
+app.get('/api/words', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     res.json(words);
   } catch (error) {
     console.error('GET /api/words error:', error);
@@ -133,6 +133,7 @@ app.post('/api/words', authenticateToken, async (req, res) => {
       word,
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
+      userId: req.user.id,
     });
 
 
@@ -163,11 +164,11 @@ app.get('/api/seed', async (req, res) => {
   }
 });
 // Search routes
-app.get('/api/search', async (req, res) => {
+app.get('/api/search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const mode = req.query.mode || 'word';
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     const results = words.filter((item) => {
       if (mode === 'definition') {
         return (item.definitions || []).some((definition) =>
@@ -182,10 +183,10 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-app.get('/api/reverse-search', async (req, res) => {
+app.get('/api/reverse-search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   try {
-    const words = await Word.find({}, { word: 1, _id: 0 }).lean();
+    const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 0 }).lean();
     const candidates = words.map((item) => item.word);
     const result = await handleReverseDict(q, candidates);
     res.json({ result });
@@ -195,9 +196,9 @@ app.get('/api/reverse-search', async (req, res) => {
 });
 
 // Quiz routes
-app.get('/api/quiz', async (req, res) => {
+app.get('/api/quiz', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     if (words.length < 5) {
       return res.status(400).json({ error: 'Not enough words for quiz' });
     }

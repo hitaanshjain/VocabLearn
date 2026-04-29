@@ -8,7 +8,12 @@ function WordList() {
   useEffect(() => {
     const fetchWords = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/words');
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:3000/api/words', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         const data = await response.json();
         setWords(data);
       } catch (error) {

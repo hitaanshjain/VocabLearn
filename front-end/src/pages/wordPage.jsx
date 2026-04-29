@@ -10,7 +10,12 @@ function WordPage() {
   useEffect(() => {
     const fetchWord = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/words/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3000/api/words/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Word not found');
