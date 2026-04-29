@@ -10,6 +10,7 @@ import QuizResults from './pages/quizResults.jsx';
 import AddWord from './pages/addWord.jsx';
 import WordList from './pages/wordList.jsx';
 import WordPage from './pages/wordPage.jsx';
+import EditWord from './pages/editWord.jsx';
 import SearchWord from './pages/searchWord.jsx';
 import Register from './pages/register';
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/quiz-results" element={<QuizResults />} />
         <Route path="/word-list" element={<WordList />} />
         <Route path="/word/:id" element={<WordPage />} />
+        <Route path="/word/:id/edit" element={<EditWord />} />
         <Route path="/search" element={<SearchWord />} />
         <Route path="/add-word" element={<AddWord />} />
         <Route

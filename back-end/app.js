@@ -32,7 +32,6 @@ function authenticateToken(req, res, next) {
     next();
   } catch (error) {
     console.log('JWT verify failed:', error.name, error.message);
-    console.log('Token received:', token);  // also log the token
     res.status(403).json({ error: 'Invalid token'});
   }
 }
@@ -118,6 +117,47 @@ app.get('/api/words/:id', async (req, res) => {
     res.json(word);
   } catch (error) {
     res.status(404).json({ error: 'Word not found' });
+  }
+});
+
+app.put('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { word: newWord, partOfSpeech, definitions, correctCount, totalTested } = req.body;
+
+    if (newWord !== undefined) existing.word = newWord;
+    if (partOfSpeech !== undefined) existing.partOfSpeech = partOfSpeech;
+    if (definitions !== undefined) existing.definitions = Array.isArray(definitions) ? definitions : [definitions];
+    if (correctCount !== undefined) existing.correctCount = Number(correctCount);
+    if (totalTested !== undefined) existing.totalTested = Number(totalTested);
+
+    await existing.save();
+    res.json(existing);
+  } catch (error) {
+    console.error('PUT /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to update word' });
+  }
+});
+
+app.delete('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    await existing.deleteOne();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to delete word' });
   }
 });
 

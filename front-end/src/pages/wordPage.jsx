@@ -63,6 +63,9 @@ function WordPage() {
       <button type="button" onClick={() => navigate('/word-list')}>
         Back to Word Bank
       </button>
+      <button type="button" onClick={() => navigate(`/word/${id}/edit`)} style={{ marginLeft: '8px' }}>
+        Edit
+      </button>
     </div>
   );
 }
