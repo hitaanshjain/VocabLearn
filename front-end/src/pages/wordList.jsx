@@ -55,10 +55,9 @@ function WordList() {
       >
         {words.map((wordObj) => (
           <button
-            key={wordObj.id}
+            key={wordObj._id}
             type="button"
-            onClick={() => navigate(`/word/${wordObj.id}`)}
-          >
+            onClick={() => navigate(`/word/${wordObj._id}`)}          >
             {wordObj.word}
           </button>
         ))}
