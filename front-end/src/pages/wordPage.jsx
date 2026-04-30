@@ -15,11 +15,10 @@ function WordPage() {
     const fetchWord = async () => {
       try {
         const token = localStorage.getItem('token');
-
         const response = await fetch(`http://localhost:3000/api/words/${id}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            'Authorization': `Bearer ${token}`
+          }
         });
 
         if (!response.ok) {
@@ -98,9 +97,9 @@ function WordPage() {
 
   if (error && !word) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
+      <div className="page">
         <h1>Word Not Found</h1>
-        <p>{error}</p>
+        <p className="inline-error">{error}</p>
         <button type="button" onClick={() => navigate('/word-list')}>
           Back to Word Bank
         </button>
@@ -113,80 +112,24 @@ function WordPage() {
   }
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
-      <div
-        style={{
-          maxWidth: '600px',
-          margin: '0 auto',
-          padding: '30px',
-          border: '1px solid #ddd',
-          borderRadius: '16px',
-          boxShadow: '0 4px 14px rgba(0,0,0,0.08)',
-        }}
-      >
-        {!isEditing ? (
-          <>
-            <h1>{word.word}</h1>
-            <p style={{ margin: '24px auto', fontSize: '18px' }}>
-              <strong>Definition:</strong> {word.definition}
-            </p>
-
-            <p>
-              <strong>Correct Count:</strong> {word.correctCount || 0}
-            </p>
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button type="button" onClick={() => setIsEditing(true)}>
-                Edit Word
-              </button>
-
-              <button type="button" onClick={handleDelete}>
-                Delete Word
-              </button>
-
-              <button type="button" onClick={() => navigate('/word-list')}>
-                Back
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <h1>Edit Word</h1>
-
-            <input
-              type="text"
-              value={editedWord}
-              onChange={(event) => setEditedWord(event.target.value)}
-              style={{ width: '100%', padding: '10px', marginBottom: '12px' }}
-            />
-
-            <textarea
-              value={editedDefinition}
-              onChange={(event) => setEditedDefinition(event.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px',
-                minHeight: '100px',
-                marginBottom: '12px',
-              }}
-            />
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <button type="button" onClick={handleSave}>
-                Save Changes
-              </button>
-
-              <button type="button" onClick={() => setIsEditing(false)}>
-                Cancel
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+    <div className="page">
+      <h1>{word.word}</h1>
+      <p>{`Part of speech: ${word.partOfSpeech ?? 'unknown'}`}</p>
+          {Array.isArray(word.definitions) && word.definitions.length > 0 ? (
+            <ol className="definition-list">
+              {word.definitions.map((definition, index) => (
+                <li key={index}>{definition}</li>
+              ))}
+            </ol>
+          ) : (
+            <p>No definitions available.</p>
+          )}
+      <button type="button" onClick={() => navigate('/word-list')}>
+        Back to Word Bank
+      </button>
+      <button type="button" onClick={() => navigate(`/word/${id}/edit`)} style={{ marginLeft: '8px' }}>
+        Edit
+      </button>
     </div>
   );
 }

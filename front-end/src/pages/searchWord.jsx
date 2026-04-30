@@ -16,7 +16,12 @@ const SearchWord = () => {
         return;
       }
 
-      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`);
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       setFilteredWords(data.results || []);
     };
@@ -33,7 +38,7 @@ const SearchWord = () => {
   };
 
   return (
-    <div className="search-page">
+    <div className="page search-page">
       <h1>{mode === 'word' ? 'Search For a Word' : 'Find a Word by Definition'}</h1>
 
       <div className="toggle-container">
@@ -69,10 +74,10 @@ const SearchWord = () => {
               <div
                 key={i}
                 className="search-result-item"
-                onClick={() => navigate(`/word/${w.id}`)}
+                onClick={() => navigate(`/word/${w._id}`)}
               >
                 <strong>{w.word}</strong>
-                <span>{w.definition}</span>
+                <span>{w.definitions?.[0] || 'No definition available'}</span>
               </div>
             ))
           ) : (

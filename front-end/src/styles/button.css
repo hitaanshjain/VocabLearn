@@ -1,41 +1,40 @@
-/* styles for the form submit button */
 button {
-    margin-top: 20px;
-    background-color: black;
-    color: white;
-    border: 1px solid white;
-    padding: 10px;
-    font-size: 20px;
-    font-family: 'DM Sans', sans-serif;
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-  }
-  
-  /* changes to the submit button when it is being clicked */
-button:active {
-    color: black;
-    background-color: white;
-    border-color: black;
-  }
+  margin-top: 12px;
+  background-color: #111827;
+  color: #ffffff;
+  border: 1px solid #111827;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  line-height: 1.2;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
 
 .button-container {
-    display: flex;
-    flex-direction: column;   /* stack vertically */
-    align-items: center;      /* center horizontally */
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+button:hover {
+  background-color: #1f2937;
+  border-color: #1f2937;
+}
+
+button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+button:active {
+  color: #111827;
+  background-color: #ffffff;
+  border-color: #111827;
 }
 
 .try-again-button {
-  margin-top: 20px;
-  background-color: black;
-  color: white;
-  border: 1px solid white;
-  padding: 10px;
-  font-size: 20px;
-  font-family: 'DM Sans', sans-serif;
-  display: flex; 
-  flex-direction: column;
-  align-items: center; 
   margin: 0 auto;
 }

@@ -7,10 +7,14 @@ const WordSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  definition: {
+  partOfSpeech:{
     type: String,
+      required: true,
+  },
+  definitions: {
+    type: [String],
     required: true,
-    trim: true,},
+  },
   correctCount: {
     type: Number,
     default: 0,
@@ -19,6 +23,10 @@ const WordSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  totalTested: {
+    type: Number,
+    default: 0
   },
 });
 

@@ -1,55 +1,69 @@
 .search-results {
-    width: 360px;
-    border: 1px solid black;
-    display: flex;
-    flex-direction: column;
-    margin: 16px auto 0;
-  }
-  
-  .search-result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    cursor: pointer;
-    gap: 20px;
-    
-  }
-  
-  .search-result-item:hover {
-    background-color: #f5f5f5;
-  }
-  
-  .search-result-item span {
-    color: #888;
-    font-size: 0.85rem;
-  }
-  
-  .no-results {
-    padding: 10px;
-    color: #888;
-  }
+  width: min(100%, 640px);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  margin: 16px auto 0;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+}
 
-  .toggle-container {
-    display: flex;
-    width: fit-content;
-    margin: 0 auto 20px;
-  }
-  
-  .toggle-btn {
-    padding: 8px 24px;
-    border: 1px solid black;
-    background: white;
-    color: black;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-  }
-  
-  .toggle-active {
-    background: black;
-    color: white;
-  }
+.search-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+  gap: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
 
-  .search-form{
-    flex-direction: column
-  }
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background-color: #f9fafb;
+}
+
+.search-result-item span {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.no-results {
+  padding: 12px;
+  color: #6b7280;
+}
+
+.toggle-container {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 16px;
+}
+
+.toggle-btn {
+  margin-top: 0;
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.toggle-active {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 640px;
+  margin: 0 auto;
+}

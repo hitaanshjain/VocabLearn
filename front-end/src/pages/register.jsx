@@ -36,7 +36,7 @@ function Register() {
 
   return (
     <div className="container">
-      <h1>Register</h1>
+      <h1>Create an account</h1>
       <div className="main-content">
         <form>
           <div>

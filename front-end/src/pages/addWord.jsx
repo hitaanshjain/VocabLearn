@@ -10,8 +10,8 @@ function AddWord() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!word.trim() || !definition.trim()) {
-      setError('Please enter both a word and a definition.');
+    if (!word.trim()) {
+      setError('Please enter a word.');
       return;
     }
     const token = localStorage.getItem('token');
@@ -27,11 +27,10 @@ function AddWord() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           word: word.trim(),
-          definition: definition.trim(),
         }),
       });
 
@@ -51,19 +50,9 @@ function AddWord() {
   };
 
   return (
-    <div style={{ padding: '40px', textAlign: 'center' }}>
+    <div className="page">
       <h1>Add Word</h1>
-
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          maxWidth: '400px',
-          margin: '20px auto',
-        }}
-      >
+      <form onSubmit={handleSubmit} className="container form-stack">
         <input
           type="text"
           placeholder="Enter a word"
@@ -71,16 +60,9 @@ function AddWord() {
           onChange={(event) => setWord(event.target.value)}
         />
 
-        <input
-          type="text"
-          placeholder="Enter the definition"
-          value={definition}
-          onChange={(event) => setDefinition(event.target.value)}
-        />
-
         <button type="submit">Save Word</button>
 
-        {error && <p>{error}</p>}
+        {error && <p className="inline-error">{error}</p>}
       </form>
     </div>
   );
