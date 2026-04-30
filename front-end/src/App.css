@@ -143,3 +143,11 @@ input[type="button"] {
   padding-left: 24px;
   max-width: 640px;
 }
+
+.word-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}

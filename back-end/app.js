@@ -167,6 +167,28 @@ app.delete('/api/words/:id', authenticateToken, async (req, res) => {
   }
 });
 
+app.post('/api/words/preview', authenticateToken, async (req, res) => {
+  try {
+    const { word } = req.body;
+    if (!word || !word.trim()) {
+      return res.status(400).json({ error: 'Word is required' });
+    }
+
+    const result = await lookupWord(word.trim());
+    if (!result) {
+      return res.status(404).json({ error: 'Word not found in dictionary' });
+    }
+
+    res.json({
+      word: result.word,
+      partOfSpeech: result.partOfSpeech,
+      definitions: result.definitions,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to preview word' });
+  }
+});
+
 app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
@@ -286,11 +308,48 @@ app.get('/api/search', authenticateToken, async (req, res) => {
 
 app.get('/api/reverse-search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
+  if (!q.trim()) {
+    return res.status(400).json({ error: 'Query is required' });
+  }
   try {
     const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 0 }).lean();
     const candidates = words.map((item) => item.word);
     const result = await handleReverseDict(q, candidates);
-    res.json({ result });
+    const response = {
+      status: result?.status || 'no_match',
+      title: '',
+      items: [],
+      suggestion: null,
+    };
+
+    if (result?.status === 'match' && result.word) {
+      const escapedWord = result.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const matchedWord = await Word.findOne(
+        { word: new RegExp(`^${escapedWord}$`, 'i') },
+        { word: 1, definitions: 1 }
+      ).lean();
+
+      if (matchedWord) {
+        response.title = 'Best match found';
+        response.items = [{
+          id: matchedWord._id,
+          word: matchedWord.word,
+          subtitle: matchedWord.definitions?.[0] || 'No definition available',
+        }];
+      } else {
+        response.title = 'Best match found';
+        response.items = [{
+          id: null,
+          word: result.word,
+          subtitle: 'Match found. No saved details available.',
+        }];
+      }
+    } else {
+      response.title = 'No direct match found';
+      response.suggestion = result?.suggestion || null;
+    }
+
+    res.json(response);
   } catch (error) {
     res.status(500).json({ error: 'Search failed' });
   }
