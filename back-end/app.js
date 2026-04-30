@@ -5,7 +5,7 @@ import { body, validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import Word from './models/Word.js';
+import Word from './models/word.js';
 import User from './models/User.js';
 import { lookupWord } from './api/dictApi.js';
 import { handleReverseDict } from './api/llmapi.js';
@@ -202,20 +202,16 @@ app.post('/api/words', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'You already added this word.' });
     }
 
-    const newWord = new Word({
-      word: word.trim().toLowerCase(),
-      definition: definition.trim(),
     const result = await lookupWord(word);
     if (!result) {
       return res.status(404).json({ error: 'Word not found in dictionary' });
     }
     const newWord = new Word({
-      word,
+      word: word.trim().toLowerCase(),
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
       userId: req.user.id,
     });
-
 
     await newWord.save();
     res.status(201).json(newWord);
