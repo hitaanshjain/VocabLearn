@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 function AddWord() {
   const [word, setWord] = useState('');
-  const [definition, setDefinition] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -23,29 +23,36 @@ function AddWord() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/words', {
+      setIsLoading(true);
+      const response = await fetch('http://localhost:3000/api/words/preview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           word: word.trim(),
         }),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to save word.');
       }
 
-      setWord('');
-      setDefinition('');
-      setError('');
-      navigate('/word-list');
+      navigate('/word/preview', {
+        state: {
+          previewWord: {
+            word: data.word,
+            partOfSpeech: data.partOfSpeech,
+            definitions: data.definitions,
+          },
+        },
+      });
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,7 +67,9 @@ function AddWord() {
           onChange={(event) => setWord(event.target.value)}
         />
 
-        <button type="submit">Save Word</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Looking up...' : 'Find Word'}
+        </button>
 
         {error && <p className="inline-error">{error}</p>}
       </form>

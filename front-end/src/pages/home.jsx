@@ -4,7 +4,7 @@ function Home() {
   const navigate = useNavigate();
   return (
     <div className="page">
-      <h1>Home</h1>
+      <h1>What would you like to do?</h1>
       <div className="button-container">
         <button onClick={() => navigate('/add-word')}>
           Add Word
