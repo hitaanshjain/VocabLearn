@@ -12,8 +12,14 @@ function SearchResults() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`
+          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
         );
 
         const data = await response.json();

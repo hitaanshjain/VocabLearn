@@ -10,7 +10,12 @@ function WordPage() {
   useEffect(() => {
     const fetchWord = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/words/${id}`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3000/api/words/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error('Word not found');
@@ -57,6 +62,9 @@ function WordPage() {
           )}
       <button type="button" onClick={() => navigate('/word-list')}>
         Back to Word Bank
+      </button>
+      <button type="button" onClick={() => navigate(`/word/${id}/edit`)} style={{ marginLeft: '8px' }}>
+        Edit
       </button>
     </div>
   );

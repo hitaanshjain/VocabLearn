@@ -32,7 +32,6 @@ function authenticateToken(req, res, next) {
     next();
   } catch (error) {
     console.log('JWT verify failed:', error.name, error.message);
-    console.log('Token received:', token);  // also log the token
     res.status(403).json({ error: 'Invalid token'});
   }
 }
@@ -100,9 +99,9 @@ app.post('/api/register',
 });
 
 
-app.get('/api/words', async (req, res) => {
+app.get('/api/words', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     res.json(words);
   } catch (error) {
     console.error('GET /api/words error:', error);
@@ -121,6 +120,47 @@ app.get('/api/words/:id', async (req, res) => {
   }
 });
 
+app.put('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { word: newWord, partOfSpeech, definitions, correctCount, totalTested } = req.body;
+
+    if (newWord !== undefined) existing.word = newWord;
+    if (partOfSpeech !== undefined) existing.partOfSpeech = partOfSpeech;
+    if (definitions !== undefined) existing.definitions = Array.isArray(definitions) ? definitions : [definitions];
+    if (correctCount !== undefined) existing.correctCount = Number(correctCount);
+    if (totalTested !== undefined) existing.totalTested = Number(totalTested);
+
+    await existing.save();
+    res.json(existing);
+  } catch (error) {
+    console.error('PUT /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to update word' });
+  }
+});
+
+app.delete('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    await existing.deleteOne();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to delete word' });
+  }
+});
+
 app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
@@ -133,6 +173,7 @@ app.post('/api/words', authenticateToken, async (req, res) => {
       word,
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
+      userId: req.user.id,
     });
 
 
@@ -163,11 +204,11 @@ app.get('/api/seed', async (req, res) => {
   }
 });
 // Search routes
-app.get('/api/search', async (req, res) => {
+app.get('/api/search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const mode = req.query.mode || 'word';
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     const results = words.filter((item) => {
       if (mode === 'definition') {
         return (item.definitions || []).some((definition) =>
@@ -182,10 +223,10 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-app.get('/api/reverse-search', async (req, res) => {
+app.get('/api/reverse-search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   try {
-    const words = await Word.find({}, { word: 1, _id: 0 }).lean();
+    const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 0 }).lean();
     const candidates = words.map((item) => item.word);
     const result = await handleReverseDict(q, candidates);
     res.json({ result });
@@ -195,9 +236,9 @@ app.get('/api/reverse-search', async (req, res) => {
 });
 
 // Quiz routes
-app.get('/api/quiz', async (req, res) => {
+app.get('/api/quiz', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     if (words.length < 5) {
       return res.status(400).json({ error: 'Not enough words for quiz' });
     }
