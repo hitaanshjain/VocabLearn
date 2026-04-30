@@ -4,7 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 function WordPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const [word, setWord] = useState(null);
+  const [editedWord, setEditedWord] = useState('');
+  const [editedDefinition, setEditedDefinition] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -23,6 +27,8 @@ function WordPage() {
 
         const data = await response.json();
         setWord(data);
+        setEditedWord(data.word);
+        setEditedDefinition(data.definition);
       } catch (err) {
         setError(err.message);
       }
@@ -31,7 +37,65 @@ function WordPage() {
     fetchWord();
   }, [id]);
 
-  if (error) {
+  const handleSave = async () => {
+    if (!editedWord.trim() || !editedDefinition.trim()) {
+      setError('Please enter both a word and a definition.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`http://localhost:3000/api/words/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          word: editedWord,
+          definition: editedDefinition,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update word');
+      }
+
+      const updatedWord = await response.json();
+      setWord(updatedWord);
+      setIsEditing(false);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm('Are you sure you want to delete this word?');
+    if (!confirmed) return;
+
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(`http://localhost:3000/api/words/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete word');
+      }
+
+      navigate('/word-list');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  if (error && !word) {
     return (
       <div className="page">
         <h1>Word Not Found</h1>
@@ -44,7 +108,7 @@ function WordPage() {
   }
 
   if (!word) {
-    return <p>Loading...</p>;
+    return <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>;
   }
 
   return (

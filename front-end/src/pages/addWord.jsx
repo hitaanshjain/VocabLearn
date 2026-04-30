@@ -14,6 +14,13 @@ function AddWord() {
       setError('Please enter a word.');
       return;
     }
+    const token = localStorage.getItem('token');
+
+    if (!token){
+      setError('Please log in first.');
+      navigate('/login');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:3000/api/words', {
@@ -27,8 +34,10 @@ function AddWord() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to save word.');
+        throw new Error(data.error || 'Failed to save word.');
       }
 
       setWord('');

@@ -35,7 +35,8 @@ function Login({ setIsLoggedIn, setUsername }) {
       setUsername(username);
 
       navigate("/home");
-    } catch (err) {
+    } 
+    catch (err) {
       setMessage(err.message);
     }
   };
@@ -44,7 +45,7 @@ function Login({ setIsLoggedIn, setUsername }) {
     <div className="container">
       <h1>Log In</h1>
       <div className="main-content">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div>
             <input type="text" value={username} onChange={event => setUsernameInput(event.target.value)} placeholder="Username"/>
           </div>
@@ -52,7 +53,7 @@ function Login({ setIsLoggedIn, setUsername }) {
             <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Password"/>
           </div>
           {message && <p>{message}</p>}
-          <input type="submit" value="Log In" onClick={handleSubmit}/>
+          <input type="submit" value="Log In" />
           <input type="button" value="Register" onClick={() => navigate('/register')} />
         </form>
       </div>

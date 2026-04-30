@@ -109,11 +109,17 @@ app.get('/api/words', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/words/:id', async (req, res) => {
+app.get('/api/words/:id', authenticateToken, async (req, res) => {
   try {
-    const wordId = req.params.id;
-    const word = await Word.findById(wordId);
-    if (!word) {return res.status(404).json({ error: 'Word not found' });}
+    const word = await Word.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!word) {
+      return res.status(404).json({ error: 'Word not found' });
+    }
+
     res.json(word);
   } catch (error) {
     res.status(404).json({ error: 'Word not found' });
@@ -165,6 +171,18 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
 
+    const existingWord = await Word.findOne({
+      userId: req.user.id,
+      word: word.trim().toLowerCase(),
+    });
+
+    if (existingWord) {
+      return res.status(400).json({ error: 'You already added this word.' });
+    }
+
+    const newWord = new Word({
+      word: word.trim().toLowerCase(),
+      definition: definition.trim(),
     const result = await lookupWord(word);
     if (!result) {
       return res.status(404).json({ error: 'Word not found in dictionary' });
@@ -181,6 +199,49 @@ app.post('/api/words', authenticateToken, async (req, res) => {
     res.status(201).json(newWord);
   } catch (error) {
     res.status(500).json({ error: 'failed to save word' });
+  }
+});
+
+app.put('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const { word, definition } = req.body;
+
+    const updatedWord = await Word.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user.id,
+      },
+      {
+        word: word.trim().toLowerCase(),
+        definition: definition.trim(),
+      },
+      { new: true }
+    );
+
+    if (!updatedWord) {
+      return res.status(404).json({ error: 'Word not found' });
+    }
+
+    res.json(updatedWord);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update word' });
+  }
+});
+
+app.delete('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const deletedWord = await Word.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!deletedWord) {
+      return res.status(404).json({ error: 'Word not found' });
+    }
+
+    res.json({ message: 'Word deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete word' });
   }
 });
 

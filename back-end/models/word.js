@@ -19,15 +19,15 @@ const WordSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   totalTested: {
     type: Number,
     default: 0
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  }
 });
 
 export default mongoose.model('Word', WordSchema);

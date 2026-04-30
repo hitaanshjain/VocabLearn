@@ -69,7 +69,7 @@ function WordList() {
           >
             <button
               type="button"
-              onClick={() => navigate(`/word/${wordObj._1d}`)}
+              onClick={() => navigate(`/word/${wordObj._id}`)}
               style={{ flex: 1, textAlign: 'center' }}
             >
               {wordObj.word}
