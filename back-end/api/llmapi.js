@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import 'dotenv/config'
+import 'dotenv/config';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -9,10 +9,10 @@ export const generatePOS = async (word) => {
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim().toLowerCase();
     return text || 'unknown';
-}
+};
 
 export const handleReverseDict = async (query, candidates = []) => {
-    const prompt =  `You are a reverse dictionary assistant for VocabLearn. Your job is to take a query and a list of candidate words, and determine if any of the candidates match the query. 
+    const prompt = `You are a reverse dictionary assistant for VocabLearn. Your job is to take a query and a list of candidate words, and determine if any of the candidates match the query. 
                     The query is a description regarding what word the user is trying to find, and the candidates are possible words that could fit that description.
                     Query: "${query}"
                     Candidate words: ${candidates.join(', ')}
@@ -32,10 +32,10 @@ export const handleReverseDict = async (query, candidates = []) => {
     
     try {
         return JSON.parse(text);
-    } catch (err) {
+    } catch (error) {
         console.error("Gemini returned invalid JSON:", text);
-        throw new Error("Failed to parse LLM response");
+        throw new Error("Failed to parse LLM response", { cause: error });
     }
 
 
-}
+};

@@ -26,7 +26,7 @@ app.use(cors());
 function authenticateToken(req, res, next) {
   const auth = req.headers['authorization'];
   const token = auth && auth.split(' ')[1];
-  if (!token) return res.status(401).json({error: 'Access denied'});
+  if (!token) {return res.status(401).json({error: 'Access denied'});}
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
@@ -35,15 +35,6 @@ function authenticateToken(req, res, next) {
     res.status(403).json({ error: 'Invalid token'});
   }
 }
-
-// Mock data
-const mockWords = [
-  { id: 1, word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
-  { id: 2, word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
-  { id: 3, word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
-  { id: 4, word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
-  { id: 5, word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
-];
 
 // Redirect root to frontend
 app.get('/', (req, res) => {
@@ -92,8 +83,24 @@ app.post('/api/register',
         password: await bcrypt.hash(req.body.password, 12),
       });
       await user.save();
-      res.json({ success: true, message: 'Registration successful' });
-    } catch (error) {
+      
+      // Create starter words for new user
+      const starterWords = [
+        { word: 'ephemeral', definitions: ['lasting for a very short time'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'serendipity', definitions: ['the occurrence of events by chance in a happy or beneficial way'], partOfSpeech: 'noun', userId: user._id },
+        { word: 'ubiquitous', definitions: ['present, appearing, or found everywhere'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'eloquent', definitions: ['fluent or persuasive in speaking or writing'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'melancholy', definitions: ['a feeling of pensive sadness'], partOfSpeech: 'noun', userId: user._id },
+      ];
+      await Word.insertMany(starterWords);
+      
+      const token = jwt.sign(
+        {id: user._id, username: user.username},
+        process.env.JWT_SECRET,
+        {expiresIn: '24h'}
+      );
+      res.json({ success: true, message: 'Registration successful', token });
+    } catch {
       res.status(500).json({ error: 'Registration failed' });
     }
 });
@@ -121,7 +128,7 @@ app.get('/api/words/:id', authenticateToken, async (req, res) => {
     }
 
     res.json(word);
-  } catch (error) {
+  } catch {
     res.status(404).json({ error: 'Word not found' });
   }
 });
@@ -137,11 +144,11 @@ app.put('/api/words/:id', authenticateToken, async (req, res) => {
 
     const { word: newWord, partOfSpeech, definitions, correctCount, totalTested } = req.body;
 
-    if (newWord !== undefined) existing.word = newWord;
-    if (partOfSpeech !== undefined) existing.partOfSpeech = partOfSpeech;
-    if (definitions !== undefined) existing.definitions = Array.isArray(definitions) ? definitions : [definitions];
-    if (correctCount !== undefined) existing.correctCount = Number(correctCount);
-    if (totalTested !== undefined) existing.totalTested = Number(totalTested);
+    if (newWord !== undefined) {existing.word = newWord;}
+    if (partOfSpeech !== undefined) {existing.partOfSpeech = partOfSpeech;}
+    if (definitions !== undefined) {existing.definitions = Array.isArray(definitions) ? definitions : [definitions];}
+    if (correctCount !== undefined) {existing.correctCount = Number(correctCount);}
+    if (totalTested !== undefined) {existing.totalTested = Number(totalTested);}
 
     await existing.save();
     res.json(existing);
@@ -184,7 +191,7 @@ app.post('/api/words/preview', authenticateToken, async (req, res) => {
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
     });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to preview word' });
   }
 });
@@ -215,7 +222,7 @@ app.post('/api/words', authenticateToken, async (req, res) => {
 
     await newWord.save();
     res.status(201).json(newWord);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'failed to save word' });
   }
 });
@@ -241,7 +248,7 @@ app.put('/api/words/:id', authenticateToken, async (req, res) => {
     }
 
     res.json(updatedWord);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to update word' });
   }
 });
@@ -258,7 +265,7 @@ app.delete('/api/words/:id', authenticateToken, async (req, res) => {
     }
 
     res.json({ message: 'Word deleted successfully' });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to delete word' });
   }
 });
@@ -297,7 +304,7 @@ app.get('/api/search', authenticateToken, async (req, res) => {
       return item.word.toLowerCase().includes(q);
     });
     res.json({ query: q, mode, results });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Search failed' });
   }
 });
@@ -346,7 +353,7 @@ app.get('/api/reverse-search', authenticateToken, async (req, res) => {
     }
 
     res.json(response);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Search failed' });
   }
 });
@@ -379,7 +386,7 @@ app.get('/api/quiz', authenticateToken, async (req, res) => {
     });
 
     res.json(questions);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to generate quiz' });
   }
 });

@@ -13,7 +13,7 @@ function EditWord() {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch word');
+        if (!res.ok) {throw new Error('Failed to fetch word');}
         return res.json();
       })
       .then((data) => {
