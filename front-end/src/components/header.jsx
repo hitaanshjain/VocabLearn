@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Menu from './Menu.jsx';
+import Menu from './menu.jsx';
 import '../styles/header.css';
 
 const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {

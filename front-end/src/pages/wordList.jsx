@@ -6,7 +6,7 @@ function WordList() {
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this word?')) return;
+    if (!window.confirm('Delete this word?')) {return;}
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:3000/api/words/${id}`, {
