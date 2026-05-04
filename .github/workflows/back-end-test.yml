@@ -31,11 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: back-end/package-lock.json
 
       - name: Install dependencies
         run: |
           cd back-end
-          npm install
+          npm ci
 
       - name: Lint code
         run: |
