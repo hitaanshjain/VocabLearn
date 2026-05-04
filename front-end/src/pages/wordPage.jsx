@@ -7,15 +7,12 @@ function WordPage() {
   const { id } = useParams();
   const previewWord = location.state?.previewWord || null;
 
-  const [word, setWord] = useState(null);
+
+  const [word, setWord] = useState(previewWord || null);
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (previewWord) {
-      setWord(previewWord);
-    }
-  }, [previewWord]);
+
 
   useEffect(() => {
     if (!id) {

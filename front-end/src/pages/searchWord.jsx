@@ -38,13 +38,7 @@ const SearchWord = () => {
     fetchResults();
   }, [query, mode]);
 
-  useEffect(() => {
-    setError('');
-    setReverseResult(null);
-    if (mode !== 'word') {
-      setFilteredWords([]);
-    }
-  }, [mode]);
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -85,13 +79,23 @@ const SearchWord = () => {
       <div className="toggle-container">
         <button
           className={`toggle-btn ${mode === 'word' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('word')}
+          onClick={() => {
+            setMode('word');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Word
         </button>
         <button
           className={`toggle-btn ${mode === 'definition' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('definition')}
+          onClick={() => {
+            setMode('definition');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Definition
         </button>
