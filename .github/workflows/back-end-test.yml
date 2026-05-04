@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd back-end
-          npm ci
+          npm install
 
       - name: Lint code
         run: |
