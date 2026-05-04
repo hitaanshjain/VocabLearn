@@ -9,7 +9,7 @@ function EditWord() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`http://localhost:3000/api/words/${id}`, {
+    fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((res) => {
@@ -39,7 +39,7 @@ function EditWord() {
         definitions: form.definitions.split('\n').map((d) => d.trim()).filter(Boolean),
       };
 
-      const res = await fetch(`http://localhost:3000/api/words/${id}`, {
+      const res = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

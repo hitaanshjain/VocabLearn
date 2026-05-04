@@ -9,7 +9,7 @@ function WordList() {
     if (!window.confirm('Delete this word?')) {return;}
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/api/words/${id}`, {
+      const res = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -31,7 +31,7 @@ function WordList() {
     const fetchWords = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/words', {
+        const response = await fetch('https://vocab-learn-api.onrender.com/api/words', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

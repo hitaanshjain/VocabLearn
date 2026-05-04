@@ -26,7 +26,7 @@ const SearchWord = () => {
 
 
         const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
+      const res = await fetch(`https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -61,7 +61,7 @@ const SearchWord = () => {
     try {
       setIsReverseLoading(true);
       const token = localStorage.getItem('token');
-      const reverseRes = await fetch(`http://localhost:3000/api/reverse-search?q=${encodeURIComponent(query)}`, {
+      const reverseRes = await fetch(`https://vocab-learn-api.onrender.com/api/reverse-search?q=${encodeURIComponent(query)}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

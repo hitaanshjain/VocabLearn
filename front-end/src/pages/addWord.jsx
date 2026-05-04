@@ -24,7 +24,7 @@ function AddWord() {
 
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:3000/api/words/preview', {
+      const response = await fetch('https://vocab-learn-api.onrender.com/api/words/preview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
