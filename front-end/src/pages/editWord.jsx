@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function EditWord() {
   const { id } = useParams();
@@ -9,7 +10,7 @@ function EditWord() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
+    fetch(`${API_BASE_URL}/api/words/${id}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((res) => {
@@ -39,7 +40,7 @@ function EditWord() {
         definitions: form.definitions.split('\n').map((d) => d.trim()).filter(Boolean),
       };
 
-      const res = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/words/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../styles/searchWord.css';
+import { API_BASE_URL } from '../config/api.js';
 
 const SearchWord = () => {
   const [searchParams] = useSearchParams();
@@ -26,7 +27,7 @@ const SearchWord = () => {
 
 
         const token = localStorage.getItem('token');
-      const res = await fetch(`https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
+      const res = await fetch(`${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -55,7 +56,7 @@ const SearchWord = () => {
     try {
       setIsReverseLoading(true);
       const token = localStorage.getItem('token');
-      const reverseRes = await fetch(`https://vocab-learn-api.onrender.com/api/reverse-search?q=${encodeURIComponent(query)}`, {
+      const reverseRes = await fetch(`${API_BASE_URL}/api/reverse-search?q=${encodeURIComponent(query)}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

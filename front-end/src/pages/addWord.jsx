@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function AddWord() {
   const [word, setWord] = useState('');
@@ -24,7 +25,7 @@ function AddWord() {
 
     try {
       setIsLoading(true);
-      const response = await fetch('https://vocab-learn-api.onrender.com/api/words/preview', {
+      const response = await fetch(`${API_BASE_URL}/api/words/preview`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

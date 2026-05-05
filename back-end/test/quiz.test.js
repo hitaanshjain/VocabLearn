@@ -23,6 +23,15 @@ after(async function() {
 });
 
 describe('Quiz routes', () => {
+  let quizQuestions = [];
+
+  before(async () => {
+    const quizRes = await request(app)
+      .get('/api/quiz')
+      .set('Authorization', `Bearer ${authToken}`);
+    quizQuestions = quizRes.body;
+  });
+
   it('GET /api/quiz should return 5 quiz questions', async () => {
     const res = await request(app)
       .get('/api/quiz')
@@ -44,17 +53,26 @@ describe('Quiz routes', () => {
     });
   });
 
-  it('POST /api/quiz/result should accept and return score data', async () => {
+  it('POST /api/quiz/result should persist per-word quiz stats', async () => {
+    const payload = {
+      answers: quizQuestions.map((question, index) => ({
+        wordId: question.id,
+        isCorrect: index % 2 === 0,
+      })),
+    };
+
     const res = await request(app)
       .post('/api/quiz/result')
-      .send({ score: 4, total: 5 });
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(payload);
 
     expect(res.status).to.equal(200);
-    expect(res.body).to.deep.equal({
-      success: true,
-      received: true,
-      score: 4,
-      total: 5,
-    });
+    expect(res.body).to.have.property('success', true);
+    expect(res.body).to.have.property('received', payload.answers.length);
+    expect(res.body).to.have.property('updated');
+
+    const updatedWord = await Word.findById(payload.answers[0].wordId);
+    expect(updatedWord.totalTested).to.equal(1);
+    expect(updatedWord.correctCount).to.equal(1);
   });
 });

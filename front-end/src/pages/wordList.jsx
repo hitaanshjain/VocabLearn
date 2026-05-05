@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/searchWord.css';
+import { API_BASE_URL } from '../config/api.js';
 function WordList() {
   const [words, setWords] = useState([]);
   const navigate = useNavigate();
+
+  const fetchWords = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/api/words`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setWords(data);
+    } catch (error) {
+      console.error('Error fetching words:', error);
+    }
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this word?')) {return;}
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/words/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -28,21 +44,6 @@ function WordList() {
   };
 
   useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('https://vocab-learn-api.onrender.com/api/words', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        setWords(data);
-      } catch (error) {
-        console.error('Error fetching words:', error);
-      }
-    };
-
     fetchWords();
   }, []);
 

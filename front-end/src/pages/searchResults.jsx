@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function SearchResults() {
   const location = useLocation();
@@ -14,7 +15,7 @@ function SearchResults() {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
+          `${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`

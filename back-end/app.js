@@ -24,6 +24,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const recentQuizSubmissions = new Map();
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
@@ -247,49 +248,6 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   }
 });
 
-app.put('/api/words/:id', authenticateToken, async (req, res) => {
-  try {
-    const { word, definition } = req.body;
-
-    const updatedWord = await Word.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        userId: req.user.id,
-      },
-      {
-        word: word.trim().toLowerCase(),
-        definition: definition.trim(),
-      },
-      { new: true }
-    );
-
-    if (!updatedWord) {
-      return res.status(404).json({ error: 'Word not found' });
-    }
-
-    res.json(updatedWord);
-  } catch {
-    res.status(500).json({ error: 'Failed to update word' });
-  }
-});
-
-app.delete('/api/words/:id', authenticateToken, async (req, res) => {
-  try {
-    const deletedWord = await Word.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user.id,
-    });
-
-    if (!deletedWord) {
-      return res.status(404).json({ error: 'Word not found' });
-    }
-
-    res.json({ message: 'Word deleted successfully' });
-  } catch {
-    res.status(500).json({ error: 'Failed to delete word' });
-  }
-});
-
 app.get('/api/seed', async (req, res) => {
   try {
     await Word.deleteMany({});
@@ -335,7 +293,7 @@ app.get('/api/reverse-search', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: 'Query is required' });
   }
   try {
-    const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 0 }).lean();
+    const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 1, definitions: 1 }).lean();
     const candidates = words.map((item) => item.word);
     const result = await handleReverseDict(q, candidates);
     const response = {
@@ -344,29 +302,18 @@ app.get('/api/reverse-search', authenticateToken, async (req, res) => {
       items: [],
       suggestion: null,
     };
-
+    
     if (result?.status === 'match' && result.word) {
-      const escapedWord = result.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const matchedWord = await Word.findOne(
-        { word: new RegExp(`^${escapedWord}$`, 'i') },
-        { word: 1, definitions: 1 }
-      ).lean();
-
-      if (matchedWord) {
-        response.title = 'Best match found';
-        response.items = [{
-          id: matchedWord._id,
-          word: matchedWord.word,
-          subtitle: matchedWord.definitions?.[0] || 'No definition available',
-        }];
-      } else {
-        response.title = 'Best match found';
-        response.items = [{
-          id: null,
-          word: result.word,
-          subtitle: 'Match found. No saved details available.',
-        }];
-      }
+      const matchedWord = words.find(w =>
+        w.word.toLowerCase() === result.word.toLowerCase()
+      );
+    
+      response.title = 'Best match found';
+      response.items = [{
+        id: matchedWord?._id || null,
+        word: result.word,
+        subtitle: matchedWord?.definitions?.[0] || 'No definition available',
+      }];
     } else {
       response.title = 'No direct match found';
       response.suggestion = result?.suggestion || null;
@@ -411,9 +358,61 @@ app.get('/api/quiz', authenticateToken, async (req, res) => {
   }
 });
 
-app.post('/api/quiz/result', (req, res) => {
-  const { score, total } = req.body;
-  res.json({ success: true, received: true, score, total });
+app.post('/api/quiz/result', authenticateToken, async (req, res) => {
+  try {
+    const { answers } = req.body;
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({ error: 'answers array is required' });
+    }
+
+    const validAnswers = answers.filter((item) => item?.wordId);
+    const operations = validAnswers.map((item) => ({
+        updateOne: {
+          filter: { _id: item.wordId, userId: req.user.id },
+          update: {
+            $inc: {
+              totalTested: 1,
+              correctCount: item.isCorrect ? 1 : 0,
+            },
+          },
+        },
+      }));
+
+    if (operations.length === 0) {
+      return res.status(400).json({ error: 'No valid answers provided' });
+    }
+
+    // Guard against accidental duplicate submissions (e.g. StrictMode double effects).
+    const normalizedAnswers = validAnswers
+      .map((item) => `${String(item.wordId)}:${item.isCorrect ? 1 : 0}`)
+      .sort()
+      .join('|');
+    const dedupeKey = `${req.user.id}:${normalizedAnswers}`;
+    const now = Date.now();
+    const lastSeen = recentQuizSubmissions.get(dedupeKey);
+    if (lastSeen && (now - lastSeen) < 30000) {
+      return res.json({
+        success: true,
+        updated: 0,
+        received: answers.length,
+        updatedWordIds: [],
+        duplicate: true,
+      });
+    }
+    recentQuizSubmissions.set(dedupeKey, now);
+
+    const result = await Word.bulkWrite(operations);
+    const updatedWordIds = [...new Set(validAnswers.map((item) => String(item.wordId)))];
+    res.json({
+      success: true,
+      updated: result.modifiedCount || 0,
+      received: answers.length,
+      updatedWordIds,
+    });
+  } catch (error) {
+    console.error('POST /api/quiz/result error:', error);
+    res.status(500).json({ error: 'Failed to record quiz results' });
+  }
 });
 
 // Start server
