@@ -9,6 +9,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
+  if (isAuthPage) return null;
+  
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername('');
@@ -23,8 +25,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
       <div className="header-left">
         {!isAuthPage && (
           <>
-            <button onClick={() => setDrawerOpen(true)}>&#9776;</button>
-            <button onClick={() => navigate('/home')}>Home</button>
+            <button onClick={() => setDrawerOpen(true)}>&#9776;  </button>
           </>
         )}
       </div>
@@ -36,8 +37,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
           !isAuthPage && <button onClick={() => navigate('/login')}>Login</button>
         ) : (
           <>
-            <span className="welcome-text">{`Welcome, ${username}`}</span>
-            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleLogout}><u>Logout</u></button>
           </>
         )}
       </div>

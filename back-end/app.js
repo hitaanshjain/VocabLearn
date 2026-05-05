@@ -1,5 +1,13 @@
 import crypto from 'crypto';
-global.crypto = crypto;
+
+if (!globalThis.crypto) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: crypto,
+    writable: true,
+    configurable: true,
+  });
+}
+
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
@@ -37,6 +45,7 @@ function authenticateToken(req, res, next) {
     res.status(403).json({ error: 'Invalid token'});
   }
 }
+
 
 // Redirect root to frontend
 app.get('/', (req, res) => {

@@ -13,19 +13,21 @@ import WordPage from './pages/wordPage.jsx';
 import EditWord from './pages/editWord.jsx';
 import SearchWord from './pages/searchWord.jsx';
 import Register from './pages/register';
+import Footer from './components/footer.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
 
   return (
-    <>
+    <div className="app-container">
       <Header
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
         username={username}
         setUsername={setUsername}
       />
+      <main style={{ flex: 1 }}>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route
@@ -47,7 +49,9 @@ function App() {
           element={<Navigate to="/search?mode=definition" replace />}
         />
       </Routes>
-    </>
+      </main>
+      <Footer />
+    </div>
   );
 }
 
