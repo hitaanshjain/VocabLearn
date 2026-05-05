@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node app.js",
     "lint": "eslint .",
-    "test": "c8 mocha",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "c8 mocha --exit",
+    "test:coverage": "c8 mocha"
+
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,7 @@
     "express-validator": "^7.3.2",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.2.0",
     "mongoose": "^9.5.0",
     "npm": "^11.13.0",
     "slugify": "^1.6.9"
@@ -32,9 +35,9 @@
     "chai": "^6.2.2",
     "chai-http": "^5.1.2",
     "eslint": "^9.0.0",
+    "esmock": "^2.7.0",
     "globals": "^17.4.0",
     "mocha": "^11.7.5",
-    "supertest": "^7.2.2",
-    "esmock": "^2.7.0"
+    "supertest": "^7.2.2"
   }
 }
