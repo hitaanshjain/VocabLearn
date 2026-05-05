@@ -10,6 +10,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  background: #f0ebe0;
+  margin: 0;
+}
+
 .app-container {
   max-width: 430px;
   margin: 0 auto;
@@ -22,7 +27,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:  #f5efe3;
+  background:  #f0ebe0;
 }
 
 h1 {
@@ -60,6 +65,17 @@ a:hover {
   border: 1px solid #e5e7eb;
   background: #ffffff;
   box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+}
+
+.login-container {
+  max-width: 640px;
+  margin: 150px auto;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+  text-align: center;
 }
 
 .main-content {

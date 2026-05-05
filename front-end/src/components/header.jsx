@@ -9,6 +9,8 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
+  if (isAuthPage) return null;
+  
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername('');

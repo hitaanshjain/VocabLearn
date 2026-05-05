@@ -5,6 +5,9 @@ import '../styles/footer.css';
 
 function Footer() {
   const navigate = useNavigate();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
+  if (isAuthPage) return null;
   return (
     <footer className="footer">
       <button onClick={() => navigate('/home')}><FaHome size={22} /><span>Home</span></button>

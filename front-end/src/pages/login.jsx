@@ -42,9 +42,9 @@ function Login({ setIsLoggedIn, setUsername }) {
   };
 
   return (
-    <div className="container">
+    <div className="login-container">
       <h1>Log In</h1>
-      <div className="main-content">
+      <div className="main-content" style = {{ textAlign: 'center' }}>
         <form onSubmit={handleSubmit}>
           <div>
             <input type="text" value={username} onChange={event => setUsernameInput(event.target.value)} placeholder="Username"/>
