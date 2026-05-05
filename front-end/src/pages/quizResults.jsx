@@ -11,7 +11,7 @@ function QuizResults() {
   useEffect(() => {
     const sendResults = async () => {
       try {
-        await fetch('http://localhost:3000/api/quiz/result', {
+        await fetch('https://vocab-learn-api.onrender.com/api/quiz/result', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

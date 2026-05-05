@@ -26,7 +26,7 @@ const SearchWord = () => {
 
 
         const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
+      const res = await fetch(`https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,13 +38,7 @@ const SearchWord = () => {
     fetchResults();
   }, [query, mode]);
 
-  useEffect(() => {
-    setError('');
-    setReverseResult(null);
-    if (mode !== 'word') {
-      setFilteredWords([]);
-    }
-  }, [mode]);
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -61,7 +55,7 @@ const SearchWord = () => {
     try {
       setIsReverseLoading(true);
       const token = localStorage.getItem('token');
-      const reverseRes = await fetch(`http://localhost:3000/api/reverse-search?q=${encodeURIComponent(query)}`, {
+      const reverseRes = await fetch(`https://vocab-learn-api.onrender.com/api/reverse-search?q=${encodeURIComponent(query)}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -85,13 +79,23 @@ const SearchWord = () => {
       <div className="toggle-container">
         <button
           className={`toggle-btn ${mode === 'word' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('word')}
+          onClick={() => {
+            setMode('word');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Word
         </button>
         <button
           className={`toggle-btn ${mode === 'definition' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('definition')}
+          onClick={() => {
+            setMode('definition');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Definition
         </button>
