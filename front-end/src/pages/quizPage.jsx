@@ -12,7 +12,7 @@ function QuizPage() {
     const fetchQuiz = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/quiz', {
+        const response = await fetch('https://vocab-learn-api.onrender.com/api/quiz', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

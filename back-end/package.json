@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "lint": "eslint .",
     "test": "c8 mocha",
     "dev": "nodemon app.js"
   },
@@ -26,13 +27,14 @@
     "slugify": "^1.6.9"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.0.0",
     "c8": "^11.0.0",
     "chai": "^6.2.2",
     "chai-http": "^5.1.2",
-    "eslint": "^10.1.0",
+    "eslint": "^9.0.0",
     "globals": "^17.4.0",
     "mocha": "^11.7.5",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "esmock": "^2.7.0"
   }
 }

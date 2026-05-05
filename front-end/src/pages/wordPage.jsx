@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 function WordPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
+  const previewWord = location.state?.previewWord || null;
 
-  const [word, setWord] = useState(null);
-  const [editedWord, setEditedWord] = useState('');
-  const [editedDefinition, setEditedDefinition] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
+
+  const [word, setWord] = useState(previewWord || null);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+
 
   useEffect(() => {
+    if (!id) {
+      return;
+    }
+
     const fetchWord = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/words/${id}`, {
+        const response = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -27,8 +34,6 @@ function WordPage() {
 
         const data = await response.json();
         setWord(data);
-        setEditedWord(data.word);
-        setEditedDefinition(data.definition);
       } catch (err) {
         setError(err.message);
       }
@@ -37,61 +42,32 @@ function WordPage() {
     fetchWord();
   }, [id]);
 
-  const handleSave = async () => {
-    if (!editedWord.trim() || !editedDefinition.trim()) {
-      setError('Please enter both a word and a definition.');
+  const handleConfirmAddition = async () => {
+    if (!word?.word) {
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`http://localhost:3000/api/words/${id}`, {
-        method: 'PUT',
+      setIsSaving(true);
+      const response = await fetch('https://vocab-learn-api.onrender.com/api/words', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({
-          word: editedWord,
-          definition: editedDefinition,
-        }),
+        body: JSON.stringify({ word: word.word }),
       });
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error('Failed to update word');
+        throw new Error(data.error || 'Failed to add word');
       }
 
-      const updatedWord = await response.json();
-      setWord(updatedWord);
-      setIsEditing(false);
-      setError('');
+      navigate(`/word/${data._id}`, { replace: true });
     } catch (err) {
       setError(err.message);
-    }
-  };
-
-  const handleDelete = async () => {
-    const confirmed = window.confirm('Are you sure you want to delete this word?');
-    if (!confirmed) return;
-
-    try {
-      const token = localStorage.getItem('token');
-
-      const response = await fetch(`http://localhost:3000/api/words/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete word');
-      }
-
-      navigate('/word-list');
-    } catch (err) {
-      setError(err.message);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -114,6 +90,7 @@ function WordPage() {
   return (
     <div className="page">
       <h1>{word.word}</h1>
+      {previewWord && <p className="muted">Preview only. Confirm to add this word to your bank.</p>}
       <p>{`Part of speech: ${word.partOfSpeech ?? 'unknown'}`}</p>
           {Array.isArray(word.definitions) && word.definitions.length > 0 ? (
             <ol className="definition-list">
@@ -124,9 +101,16 @@ function WordPage() {
           ) : (
             <p>No definitions available.</p>
           )}
-      <button type="button" onClick={() => navigate('/word-list')}>
-        Back to Word Bank
-      </button>
+      <div className="word-actions">
+        {previewWord && (
+          <button type="button" onClick={handleConfirmAddition} disabled={isSaving}>
+            {isSaving ? 'Adding...' : 'Confirm Addition'}
+          </button>
+        )}
+        <button type="button" onClick={() => navigate('/word-list')}>
+          Back to Word Bank
+        </button>
+      </div>
       <button type="button" onClick={() => navigate(`/word/${id}/edit`)} style={{ marginLeft: '8px' }}>
         Edit
       </button>

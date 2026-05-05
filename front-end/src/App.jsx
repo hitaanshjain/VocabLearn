@@ -37,6 +37,7 @@ function App() {
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/quiz-results" element={<QuizResults />} />
         <Route path="/word-list" element={<WordList />} />
+        <Route path="/word/preview" element={<WordPage />} />
         <Route path="/word/:id" element={<WordPage />} />
         <Route path="/word/:id/edit" element={<EditWord />} />
         <Route path="/search" element={<SearchWord />} />

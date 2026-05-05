@@ -67,3 +67,7 @@
   max-width: 640px;
   margin: 0 auto;
 }
+
+.reverse-message {
+  margin-top: 12px;
+}

@@ -7,17 +7,26 @@ const SearchWord = () => {
   const [mode, setMode] = useState(searchParams.get('mode') || 'word');
   const [query, setQuery] = useState('');
   const [filteredWords, setFilteredWords] = useState([]);
+  const [reverseResult, setReverseResult] = useState(null);
+  const [isReverseLoading, setIsReverseLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResults = async () => {
+      if (mode !== 'word') {
+        setFilteredWords([]);
+        return;
+      }
+
       if (!query.trim()) {
         setFilteredWords([]);
         return;
       }
 
-      const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
+
+        const token = localStorage.getItem('token');
+      const res = await fetch(`https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -29,12 +38,38 @@ const SearchWord = () => {
     fetchResults();
   }, [query, mode]);
 
-  const handleSearch = (e) => {
+
+
+  const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) {
       return;
     }
-    navigate(`/results?q=${encodeURIComponent(query)}&mode=${mode}`);
+
+    setError('');
+
+    if (mode === 'word') {
+      return;
+    }
+
+    try {
+      setIsReverseLoading(true);
+      const token = localStorage.getItem('token');
+      const reverseRes = await fetch(`https://vocab-learn-api.onrender.com/api/reverse-search?q=${encodeURIComponent(query)}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const reverseData = await reverseRes.json();
+      if (!reverseRes.ok) {
+        throw new Error(reverseData.error || 'Reverse search failed');
+      }
+      setReverseResult(reverseData || null);
+    } catch (err) {
+      setError(err.message || 'Reverse search failed');
+    } finally {
+      setIsReverseLoading(false);
+    }
   };
 
   return (
@@ -44,13 +79,23 @@ const SearchWord = () => {
       <div className="toggle-container">
         <button
           className={`toggle-btn ${mode === 'word' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('word')}
+          onClick={() => {
+            setMode('word');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Word
         </button>
         <button
           className={`toggle-btn ${mode === 'definition' ? 'toggle-active' : ''}`}
-          onClick={() => setMode('definition')}
+          onClick={() => {
+            setMode('definition');
+            setError('');
+            setReverseResult(null);
+            setFilteredWords([]);
+          }}
         >
           Definition
         </button>
@@ -67,7 +112,9 @@ const SearchWord = () => {
         <input type="submit" value="Search"/>
       </form>
 
-      {query && (
+      {error && <p className="inline-error reverse-message">{error}</p>}
+
+      {mode === 'word' && query && (
         <div className="search-results">
           {filteredWords.length > 0 ? (
             filteredWords.map((w, i) => (
@@ -86,7 +133,32 @@ const SearchWord = () => {
         </div>
       )}
 
-  
+      {mode === 'definition' && isReverseLoading && (
+        <p className="muted reverse-message">Searching with AI...</p>
+      )}
+
+      {mode === 'definition' && reverseResult && (
+        <div className="search-results">
+          {reverseResult.status === 'match' ? (
+            <div
+              className="search-result-item"
+              onClick={() => reverseResult.items?.[0]?.id && navigate(`/word/${reverseResult.items[0].id}`)}
+            >
+              <strong>{reverseResult.items?.[0]?.word || 'Matched word'}</strong>
+              <span>
+                {reverseResult.items?.[0]?.subtitle || 'Match found. Open word details if available.'}
+              </span>
+            </div>
+          ) : (
+            <p className="no-results">
+              {reverseResult.title || 'No direct match found'}.
+              {reverseResult.suggestion && (
+                <> Suggested word: <strong>{reverseResult.suggestion}</strong></>
+              )}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

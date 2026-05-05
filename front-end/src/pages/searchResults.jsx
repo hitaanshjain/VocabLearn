@@ -14,7 +14,7 @@ function SearchResults() {
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
+          `https://vocab-learn-api.onrender.com/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
