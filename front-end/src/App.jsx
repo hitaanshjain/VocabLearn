@@ -20,13 +20,14 @@ function App() {
   const [username, setUsername] = useState('');
 
   return (
-    <>
+    <div className="app-container">
       <Header
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
         username={username}
         setUsername={setUsername}
       />
+      <main style={{ flex: 1 }}>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route
@@ -48,8 +49,9 @@ function App() {
           element={<Navigate to="/search?mode=definition" replace />}
         />
       </Routes>
+      </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

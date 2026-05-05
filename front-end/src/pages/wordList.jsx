@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import '../styles/searchWord.css';
 function WordList() {
   const [words, setWords] = useState([]);
   const navigate = useNavigate();
@@ -62,26 +62,22 @@ function WordList() {
     <div className="page">
       <h1>Your Words</h1>
       <button type="button" onClick={() => navigate('/add-word')}>
-        Add Word
+        Add Another Word
       </button>
 
-      <div className="card scroll-panel list-column">
+            <div className="search-results">
         {words.map((wordObj) => (
-          <div
-            key={wordObj._id}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px', padding: '4px 0' }}
-          >
-            <button
-              type="button"
+          <div key={wordObj._id} className="search-result-item">
+            <span
+              style={{ flex: 1, cursor: 'pointer', color: '#111827', fontWeight: 500 }}
               onClick={() => navigate(`/word/${wordObj._id}`)}
-              style={{ flex: 1, textAlign: 'center' }}
             >
               {wordObj.word}
-            </button>
+            </span>
             <button
               type="button"
               onClick={() => handleDelete(wordObj._id)}
-              style={{ marginLeft: '4px', background: 'transparent', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', padding: '0 6px' }}
+              style={{ background: 'transparent', border: 'none', color: '#ef4444', fontWeight: 600, cursor: 'pointer', padding: '0 6px', fontSize: '1.2rem' }}
               aria-label={`Delete ${wordObj.word}`}
             >
               ×
@@ -89,7 +85,6 @@ function WordList() {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
