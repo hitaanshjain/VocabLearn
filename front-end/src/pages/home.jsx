@@ -7,7 +7,7 @@ function Home() {
       <h1>What would you like to do?</h1>
       <div className="button-container">
         <button onClick={() => navigate('/add-word')}>
-          Add Word
+          Add a Word
         </button>
         <button onClick={() => navigate('/quiz')}>
           Take a Vocab Quiz

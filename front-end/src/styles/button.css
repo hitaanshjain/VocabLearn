@@ -38,3 +38,11 @@ button:active {
 .try-again-button {
   margin: 0 auto;
 }
+
+.icon-button {
+  display: flex;
+  background-color: transparent;
+  color: #000000;
+  align-items: center;
+  gap: 6px;
+}
