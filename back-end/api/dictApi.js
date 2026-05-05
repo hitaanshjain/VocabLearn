@@ -1,12 +1,14 @@
 import { generatePOS } from "./llmapi.js";
-const BASE_URL = "https://api.dictionaryapi.dev/api/v2/entries/en";
+const BASE_URL = "https://freedictionaryapi.com/api/v1/entries/en";
 
 
  const normalizeData = async (word, data) => {
-    const pos = await generatePOS(word);
-    const definitions = data[0].meanings.flatMap(m =>
-        m.definitions.map(d => d.definition)
-      );
+    const pos = data.entries[0].partOfSpeech;
+    const definitions = data.entries.flatMap(entry =>
+      entry.senses
+        .filter(sense => sense.tags.length === 0)
+        .map(sense => sense.definition)
+    );
 
     console.log(pos);
     return {
