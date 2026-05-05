@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node app.js",
     "lint": "eslint .",
-    "test": "c8 mocha",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "c8 mocha --exit",
+    "test:coverage": "c8 mocha"
+
   },
   "keywords": [],
   "author": "",
