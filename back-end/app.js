@@ -171,34 +171,39 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
 
+    if (!word || !word.trim()) {
+      return res.status(400).json({ error: 'Word is required' });
+    }
+
+    const cleanWord = word.trim().toLowerCase();
+
     const existingWord = await Word.findOne({
       userId: req.user.id,
-      word: word.trim().toLowerCase(),
+      word: cleanWord,
     });
 
     if (existingWord) {
       return res.status(400).json({ error: 'You already added this word.' });
     }
 
-    const newWord = new Word({
-      word: word.trim().toLowerCase(),
-      definition: definition.trim(),
-    const result = await lookupWord(word);
+    const result = await lookupWord(cleanWord);
+
     if (!result) {
       return res.status(404).json({ error: 'Word not found in dictionary' });
     }
+
     const newWord = new Word({
-      word,
+      word: cleanWord,
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
       userId: req.user.id,
     });
 
-
     await newWord.save();
     res.status(201).json(newWord);
   } catch (error) {
-    res.status(500).json({ error: 'failed to save word' });
+    console.error('POST /api/words error:', error);
+    res.status(500).json({ error: 'Failed to save word' });
   }
 });
 
