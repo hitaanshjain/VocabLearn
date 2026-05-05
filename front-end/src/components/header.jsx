@@ -3,13 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Menu from './menu.jsx';
 import '../styles/header.css';
 
-const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
+const Header = ({ isLoggedIn, setIsLoggedIn, setUsername }) => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-  if (isAuthPage) return null;
+  if (isAuthPage) {return null;}
   
   const handleLogout = () => {
     setIsLoggedIn(false);
