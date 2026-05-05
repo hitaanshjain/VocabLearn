@@ -80,6 +80,9 @@ function QuizPage() {
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
+      <div style={{ width: '100%', maxWidth: '420px', height: '10px', margin: '0 auto 20px', backgroundColor: '#ffffff', borderRadius: '999px', overflow: 'hidden' }}>
+      <div style={{ width: `${progressPercent}%`, height: '100%', backgroundColor: '#111827', transition: 'width 200ms ease' }} />
+    </div>
       <h1>Quiz</h1>
       <h2>Which word matches this definition?</h2>
       <p>{question.question}</p>
@@ -114,14 +117,6 @@ function QuizPage() {
         overflow: 'hidden',
       }}
     >
-      <div
-        style={{
-          width: `${progressPercent}%`,
-          height: '100%',
-          backgroundColor: '#111827',
-          transition: 'width 200ms ease',
-        }}
-      />
     </div>
     </div>
   );

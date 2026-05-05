@@ -1,4 +1,3 @@
-import { generatePOS } from "./llmapi.js";
 const BASE_URL = "https://freedictionaryapi.com/api/v1/entries/en";
 
 

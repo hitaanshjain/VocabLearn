@@ -38,7 +38,7 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
           !isAuthPage && <button onClick={() => navigate('/login')}>Login</button>
         ) : (
           <>
-            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleLogout}><u>Logout</u></button>
           </>
         )}
       </div>

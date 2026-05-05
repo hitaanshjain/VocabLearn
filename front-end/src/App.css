@@ -17,9 +17,10 @@ body {
 }
 
 h1 {
-  margin: 0 0 16px;
+  margin: 10px 10px 24px;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 2rem;
+  line-height: 1.2;
 }
 
 p {

@@ -13,6 +13,7 @@ import WordPage from './pages/wordPage.jsx';
 import EditWord from './pages/editWord.jsx';
 import SearchWord from './pages/searchWord.jsx';
 import Register from './pages/register';
+import Footer from './components/footer.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -47,6 +48,7 @@ function App() {
           element={<Navigate to="/search?mode=definition" replace />}
         />
       </Routes>
+      <Footer />
     </>
   );
 }

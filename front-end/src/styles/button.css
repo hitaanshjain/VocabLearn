@@ -1,5 +1,5 @@
 button {
-  margin-top: 12px;
+  margin-top: 4px;
   background-color: #111827;
   color: #ffffff;
   border: 1px solid #111827;
@@ -37,12 +37,4 @@ button:active {
 
 .try-again-button {
   margin: 0 auto;
-}
-
-.icon-button {
-  display: flex;
-  background-color: transparent;
-  color: #000000;
-  align-items: center;
-  gap: 6px;
 }

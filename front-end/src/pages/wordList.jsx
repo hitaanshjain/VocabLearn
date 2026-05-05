@@ -60,7 +60,11 @@ function WordList() {
 
   return (
     <div className="page">
-      <h1>Word Bank</h1>
+      <h1>Your Words</h1>
+      <button type="button" onClick={() => navigate('/add-word')}>
+        Add Word
+      </button>
+
       <div className="card scroll-panel list-column">
         {words.map((wordObj) => (
           <div
@@ -86,9 +90,6 @@ function WordList() {
         ))}
       </div>
 
-      <button type="button" onClick={() => navigate('/add-word')}>
-        Add Word
-      </button>
     </div>
   );
 }

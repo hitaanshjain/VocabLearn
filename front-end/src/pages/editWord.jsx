@@ -60,10 +60,10 @@ function EditWord() {
   };
 
   return (
-    <div className="page container">
+    <div className="page">
       <h1>Edit Word</h1>
       {error && <div className="inline-error">{error}</div>}
-      <form onSubmit={handleSubmit} className="word-form">
+      <form onSubmit={handleSubmit} className="container form-stack">
         <label>Word</label>
         <input name="word" value={form.word} onChange={handleChange} required />
 
