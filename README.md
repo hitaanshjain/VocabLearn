@@ -78,3 +78,13 @@ Front-end runs at `http://localhost:5173`.
 1. Start back-end first (`back-end`, `npm start`).
 2. Start front-end second (`front-end`, `npm run dev`).
 3. Open `http://localhost:5173` in your browser.
+
+## Continuous Integration
+
+This project uses GitHub Actions to automate testing and deployment workflows.
+
+Current workflows include:
+- Automated backend testing
+- Frontend build validation
+- Continuous deployment workflows
+- Git activity logging for project tracking
