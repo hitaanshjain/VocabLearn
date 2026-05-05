@@ -7,6 +7,10 @@
   gap: 16px;
   padding: 16px 20px;
   background: #1a1a2e;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header-left {

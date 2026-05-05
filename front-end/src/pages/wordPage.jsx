@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function WordPage() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function WordPage() {
     const fetchWord = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://vocab-learn-api.onrender.com/api/words/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/words/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -49,7 +50,7 @@ function WordPage() {
 
     try {
       setIsSaving(true);
-      const response = await fetch('https://vocab-learn-api.onrender.com/api/words', {
+      const response = await fetch(`${API_BASE_URL}/api/words`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,11 +88,18 @@ function WordPage() {
     return <p style={{ textAlign: 'center', marginTop: '40px' }}>Loading...</p>;
   }
 
+  const timesTested = Number.isFinite(word.totalTested) ? word.totalTested : 0;
+  const timesCorrect = Number.isFinite(word.correctCount) ? word.correctCount : 0;
+  const accuracy = timesTested > 0 ? Math.round((timesCorrect / timesTested) * 100) : 0;
+
   return (
     <div className="page">
       <h1>{word.word}</h1>
       {previewWord && <p className="muted">Preview only. Confirm to add this word to your bank.</p>}
       <p>{`Part of speech: ${word.partOfSpeech ?? 'unknown'}`}</p>
+      {!previewWord && (
+        <p>{`Quiz stats: ${timesCorrect} correct out of ${timesTested} tested (${accuracy}% accuracy)`}</p>
+      )}
           {Array.isArray(word.definitions) && word.definitions.length > 0 ? (
             <ol className="definition-list">
               {word.definitions.map((definition, index) => (

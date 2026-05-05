@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function QuizPage() {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('https://vocab-learn-api.onrender.com/api/quiz', {
+        const response = await fetch(`${API_BASE_URL}/api/quiz`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -35,23 +37,37 @@ function QuizPage() {
   }, []);
 
   const handleAnswer = (choice) => {
-    const correctAnswer = questions[currentQuestion].answer;
+    const current = questions[currentQuestion];
+    const correctAnswer = current.answer;
     let newScore = score;
+    const isCorrect = choice === correctAnswer;
 
-    if (choice === correctAnswer) {
+    if (isCorrect) {
       newScore = score + 1;
       setScore(newScore);
     }
+
+    const nextAnswers = [
+      ...answers,
+      {
+        wordId: current.id,
+        isCorrect,
+      },
+    ];
+    setAnswers(nextAnswers);
 
     const nextQuestion = currentQuestion + 1;
 
     if (nextQuestion < questions.length) {
       setCurrentQuestion(nextQuestion);
     } else {
+      const submissionKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       navigate('/quiz-results', {
         state: {
           score: newScore,
           total: questions.length,
+          answers: nextAnswers,
+          submissionKey,
         },
       });
     }

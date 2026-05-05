@@ -5,7 +5,6 @@ const BASE_URL = "https://freedictionaryapi.com/api/v1/entries/en";
     const pos = data.entries[0].partOfSpeech;
     const definitions = data.entries.flatMap(entry =>
       entry.senses
-        .filter(sense => sense.tags.length === 0)
         .map(sense => sense.definition)
     );
 

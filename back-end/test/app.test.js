@@ -90,15 +90,28 @@ describe('POST /api/words', () => {
 });
 
 describe('POST /api/quiz/result', () => {
-  it('should accept and echo quiz score', async () => {
-    const res = await request(app).post('/api/quiz/result').send({ score: 4, total: 5 });
+  it('should record quiz answers and update word stats', async () => {
+    const quizRes = await request(app)
+      .get('/api/quiz')
+      .set('Authorization', `Bearer ${authToken}`);
+    const answers = quizRes.body.map((question, idx) => ({
+      wordId: question.id,
+      isCorrect: idx < 2,
+    }));
+
+    const res = await request(app)
+      .post('/api/quiz/result')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send({ answers });
+
     expect(res.status).to.equal(200);
-    expect(res.body).to.deep.equal({
-      success: true,
-      received: true,
-      score: 4,
-      total: 5,
-    });
+    expect(res.body).to.have.property('success', true);
+    expect(res.body).to.have.property('received', answers.length);
+
+    const testedWord = await Word.findById(answers[0].wordId);
+    expect(testedWord).to.not.equal(null);
+    expect(testedWord.totalTested).to.equal(1);
+    expect(testedWord.correctCount).to.equal(1);
   });
 });
 
