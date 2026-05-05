@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: ["18.x"]
+        node-version: ["20.x"]
 
     services:
       mongodb:
@@ -47,6 +47,7 @@ jobs:
           MONGO_URI: mongodb://admin:password@localhost:27017/vocab-learn-test?authSource=admin
           JWT_SECRET: test-secret-key
           NODE_ENV: test
+          NODE_OPTIONS: --experimental-global-webcrypto
         run: |
           cd back-end
           npm test
