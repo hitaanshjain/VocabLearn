@@ -24,9 +24,6 @@ const Header = ({ isLoggedIn, setIsLoggedIn, username, setUsername }) => {
         {!isAuthPage && (
           <>
             <button onClick={() => setDrawerOpen(true)}>&#9776;  </button>
-            <button onClick={() => navigate('/home')} >
-              <img src="/home.png" alt="" width={16} height={16} />
-            </button>
           </>
         )}
       </div>
