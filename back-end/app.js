@@ -212,22 +212,12 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
 
-    if (!word || !word.trim()) {
-      return res.status(400).json({ error: 'Word is required' });
+    if (!word || typeof word !== 'string') {
+      return res.status(400).json({ error: 'Valid word is required' });
     }
 
+    const result = await lookupWord(word);
     const cleanWord = word.trim().toLowerCase();
-
-    const existingWord = await Word.findOne({
-      userId: req.user.id,
-      word: cleanWord,
-    });
-
-    if (existingWord) {
-      return res.status(400).json({ error: 'You already added this word.' });
-    }
-
-    const result = await lookupWord(cleanWord);
 
     if (!result) {
       return res.status(404).json({ error: 'Word not found in dictionary' });
@@ -248,25 +238,6 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/seed', async (req, res) => {
-  try {
-    await Word.deleteMany({});
-
-    const seedWords = [
-      { word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
-      { word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
-      { word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
-      { word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
-      { word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
-    ];
-
-    const inserted = await Word.insertMany(seedWords);
-    res.json(inserted);
-  } catch (error) {
-    console.error('GET /api/seed error:', error);
-    res.status(500).json({ error: 'Failed to seed words' });
-  }
-});
 // Search routes
 app.get('/api/search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();

@@ -51,6 +51,9 @@ Create a `.env` file in `back-end/`:
 ```env
 PORT=3000
 FRONTEND_URL=http://localhost:5173
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 Start the API server:
