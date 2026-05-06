@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function SearchResults() {
   const location = useLocation();
@@ -12,8 +13,14 @@ function SearchResults() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:3000/api/search?q=${encodeURIComponent(query)}&mode=${mode}`
+          `${API_BASE_URL}/api/search?q=${encodeURIComponent(query)}&mode=${mode}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
         );
 
         const data = await response.json();

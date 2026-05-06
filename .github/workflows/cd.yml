@@ -1,0 +1,68 @@
+name: CI to CD
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        options: >-
+          --health-cmd mongosh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install backend dependencies
+        working-directory: ./back-end
+        run: npm install
+
+      - name: Lint backend
+        working-directory: ./back-end
+        run: npm run lint
+
+      - name: Run backend tests
+        working-directory: ./back-end
+        env:
+          MONGO_URI: mongodb://admin:password@localhost:27017/vocab-learn-test?authSource=admin
+          JWT_SECRET: test-secret-key
+          NODE_ENV: test
+          NODE_OPTIONS: --experimental-global-webcrypto
+        run: npm test
+
+      - name: Install frontend dependencies
+        working-directory: ./front-end
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./front-end
+        run: npm run build
+
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger frontend deploy hook
+        run: curl -fsS -X POST "${{ secrets.RENDER_HOOK_FRONTEND }}"
+
+      - name: Trigger backend deploy hook
+        run: curl -fsS -X POST "${{ secrets.RENDER_HOOK_BACKEND }}"

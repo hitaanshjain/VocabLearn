@@ -1,3 +1,13 @@
+import crypto from 'crypto';
+
+if (!globalThis.crypto) {
+  Object.defineProperty(globalThis, 'crypto', {
+    value: crypto,
+    writable: true,
+    configurable: true,
+  });
+}
+
 import mongoose from 'mongoose';
 import express from 'express';
 import cors from 'cors';
@@ -5,7 +15,7 @@ import { body, validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import Word from './models/Word.js';
+import Word from './models/word.js';
 import User from './models/User.js';
 import { lookupWord } from './api/dictApi.js';
 import { handleReverseDict } from './api/llmapi.js';
@@ -14,6 +24,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const recentQuizSubmissions = new Map();
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
@@ -26,7 +37,7 @@ app.use(cors());
 function authenticateToken(req, res, next) {
   const auth = req.headers['authorization'];
   const token = auth && auth.split(' ')[1];
-  if (!token) return res.status(401).json({error: 'Access denied'});
+  if (!token) {return res.status(401).json({error: 'Access denied'});}
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
@@ -35,7 +46,6 @@ function authenticateToken(req, res, next) {
     res.status(403).json({ error: 'Invalid token'});
   }
 }
-
 
 
 // Redirect root to frontend
@@ -85,16 +95,32 @@ app.post('/api/register',
         password: await bcrypt.hash(req.body.password, 12),
       });
       await user.save();
-      res.json({ success: true, message: 'Registration successful' });
-    } catch (error) {
+      
+      // Create starter words for new user
+      const starterWords = [
+        { word: 'ephemeral', definitions: ['lasting for a very short time'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'serendipity', definitions: ['the occurrence of events by chance in a happy or beneficial way'], partOfSpeech: 'noun', userId: user._id },
+        { word: 'ubiquitous', definitions: ['present, appearing, or found everywhere'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'eloquent', definitions: ['fluent or persuasive in speaking or writing'], partOfSpeech: 'adjective', userId: user._id },
+        { word: 'melancholy', definitions: ['a feeling of pensive sadness'], partOfSpeech: 'noun', userId: user._id },
+      ];
+      await Word.insertMany(starterWords);
+      
+      const token = jwt.sign(
+        {id: user._id, username: user.username},
+        process.env.JWT_SECRET,
+        {expiresIn: '24h'}
+      );
+      res.json({ success: true, message: 'Registration successful', token });
+    } catch {
       res.status(500).json({ error: 'Registration failed' });
     }
 });
 
 
-app.get('/api/words', async (req, res) => {
+app.get('/api/words', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     res.json(words);
   } catch (error) {
     console.error('GET /api/words error:', error);
@@ -102,14 +128,83 @@ app.get('/api/words', async (req, res) => {
   }
 });
 
-app.get('/api/words/:id', async (req, res) => {
+app.get('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const word = await Word.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!word) {
+      return res.status(404).json({ error: 'Word not found' });
+    }
+
+    res.json(word);
+  } catch {
+    res.status(404).json({ error: 'Word not found' });
+  }
+});
+
+app.put('/api/words/:id', authenticateToken, async (req, res) => {
   try {
     const wordId = req.params.id;
-    const word = await Word.findById(wordId);
-    if (!word) {return res.status(404).json({ error: 'Word not found' });}
-    res.json(word);
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    const { word: newWord, partOfSpeech, definitions, correctCount, totalTested } = req.body;
+
+    if (newWord !== undefined) {existing.word = newWord;}
+    if (partOfSpeech !== undefined) {existing.partOfSpeech = partOfSpeech;}
+    if (definitions !== undefined) {existing.definitions = Array.isArray(definitions) ? definitions : [definitions];}
+    if (correctCount !== undefined) {existing.correctCount = Number(correctCount);}
+    if (totalTested !== undefined) {existing.totalTested = Number(totalTested);}
+
+    await existing.save();
+    res.json(existing);
   } catch (error) {
-    res.status(404).json({ error: 'Word not found' });
+    console.error('PUT /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to update word' });
+  }
+});
+
+app.delete('/api/words/:id', authenticateToken, async (req, res) => {
+  try {
+    const wordId = req.params.id;
+    const existing = await Word.findById(wordId);
+    if (!existing) { return res.status(404).json({ error: 'Word not found' }); }
+    if (existing.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    await existing.deleteOne();
+    res.json({ success: true });
+  } catch (error) {
+    console.error('DELETE /api/words/:id error:', error);
+    res.status(500).json({ error: 'Failed to delete word' });
+  }
+});
+
+app.post('/api/words/preview', authenticateToken, async (req, res) => {
+  try {
+    const { word } = req.body;
+    if (!word || !word.trim()) {
+      return res.status(400).json({ error: 'Word is required' });
+    }
+
+    const result = await lookupWord(word.trim());
+    if (!result) {
+      return res.status(404).json({ error: 'Word not found in dictionary' });
+    }
+
+    res.json({
+      word: result.word,
+      partOfSpeech: result.partOfSpeech,
+      definitions: result.definitions,
+    });
+  } catch {
+    res.status(500).json({ error: 'Failed to preview word' });
   }
 });
 
@@ -132,21 +227,23 @@ app.post('/api/words', authenticateToken, async (req, res) => {
       word: cleanWord,
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
+      userId: req.user.id,
     });
 
     await newWord.save();
     res.status(201).json(newWord);
   } catch (error) {
-    res.status(500).json({ error: 'failed to save word' });
+    console.error('POST /api/words error:', error);
+    res.status(500).json({ error: 'Failed to save word' });
   }
 });
 
 // Search routes
-app.get('/api/search', async (req, res) => {
+app.get('/api/search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
   const mode = req.query.mode || 'word';
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     const results = words.filter((item) => {
       if (mode === 'definition') {
         return (item.definitions || []).some((definition) =>
@@ -156,27 +253,53 @@ app.get('/api/search', async (req, res) => {
       return item.word.toLowerCase().includes(q);
     });
     res.json({ query: q, mode, results });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Search failed' });
   }
 });
 
-app.get('/api/reverse-search', async (req, res) => {
+app.get('/api/reverse-search', authenticateToken, async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
+  if (!q.trim()) {
+    return res.status(400).json({ error: 'Query is required' });
+  }
   try {
-    const words = await Word.find({}, { word: 1, _id: 0 }).lean();
+    const words = await Word.find({ userId: req.user.id }, { word: 1, _id: 1, definitions: 1 }).lean();
     const candidates = words.map((item) => item.word);
     const result = await handleReverseDict(q, candidates);
-    res.json({ result });
-  } catch (error) {
+    const response = {
+      status: result?.status || 'no_match',
+      title: '',
+      items: [],
+      suggestion: null,
+    };
+    
+    if (result?.status === 'match' && result.word) {
+      const matchedWord = words.find(w =>
+        w.word.toLowerCase() === result.word.toLowerCase()
+      );
+    
+      response.title = 'Best match found';
+      response.items = [{
+        id: matchedWord?._id || null,
+        word: result.word,
+        subtitle: matchedWord?.definitions?.[0] || 'No definition available',
+      }];
+    } else {
+      response.title = 'No direct match found';
+      response.suggestion = result?.suggestion || null;
+    }
+
+    res.json(response);
+  } catch {
     res.status(500).json({ error: 'Search failed' });
   }
 });
 
 // Quiz routes
-app.get('/api/quiz', async (req, res) => {
+app.get('/api/quiz', authenticateToken, async (req, res) => {
   try {
-    const words = await Word.find();
+    const words = await Word.find({ userId: req.user.id });
     if (words.length < 5) {
       return res.status(400).json({ error: 'Not enough words for quiz' });
     }
@@ -201,14 +324,66 @@ app.get('/api/quiz', async (req, res) => {
     });
 
     res.json(questions);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Failed to generate quiz' });
   }
 });
 
-app.post('/api/quiz/result', (req, res) => {
-  const { score, total } = req.body;
-  res.json({ success: true, received: true, score, total });
+app.post('/api/quiz/result', authenticateToken, async (req, res) => {
+  try {
+    const { answers } = req.body;
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({ error: 'answers array is required' });
+    }
+
+    const validAnswers = answers.filter((item) => item?.wordId);
+    const operations = validAnswers.map((item) => ({
+        updateOne: {
+          filter: { _id: item.wordId, userId: req.user.id },
+          update: {
+            $inc: {
+              totalTested: 1,
+              correctCount: item.isCorrect ? 1 : 0,
+            },
+          },
+        },
+      }));
+
+    if (operations.length === 0) {
+      return res.status(400).json({ error: 'No valid answers provided' });
+    }
+
+    // Guard against accidental duplicate submissions (e.g. StrictMode double effects).
+    const normalizedAnswers = validAnswers
+      .map((item) => `${String(item.wordId)}:${item.isCorrect ? 1 : 0}`)
+      .sort()
+      .join('|');
+    const dedupeKey = `${req.user.id}:${normalizedAnswers}`;
+    const now = Date.now();
+    const lastSeen = recentQuizSubmissions.get(dedupeKey);
+    if (lastSeen && (now - lastSeen) < 30000) {
+      return res.json({
+        success: true,
+        updated: 0,
+        received: answers.length,
+        updatedWordIds: [],
+        duplicate: true,
+      });
+    }
+    recentQuizSubmissions.set(dedupeKey, now);
+
+    const result = await Word.bulkWrite(operations);
+    const updatedWordIds = [...new Set(validAnswers.map((item) => String(item.wordId)))];
+    res.json({
+      success: true,
+      updated: result.modifiedCount || 0,
+      received: answers.length,
+      updatedWordIds,
+    });
+  } catch (error) {
+    console.error('POST /api/quiz/result error:', error);
+    res.status(500).json({ error: 'Failed to record quiz results' });
+  }
 });
 
 // Start server

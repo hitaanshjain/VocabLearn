@@ -1,18 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function QuizPage() {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState([]);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/quiz');
-
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/api/quiz`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
         if (!response.ok) {
           throw new Error('Could not load quiz');
         }
@@ -30,23 +37,37 @@ function QuizPage() {
   }, []);
 
   const handleAnswer = (choice) => {
-    const correctAnswer = questions[currentQuestion].answer;
+    const current = questions[currentQuestion];
+    const correctAnswer = current.answer;
     let newScore = score;
+    const isCorrect = choice === correctAnswer;
 
-    if (choice === correctAnswer) {
+    if (isCorrect) {
       newScore = score + 1;
       setScore(newScore);
     }
+
+    const nextAnswers = [
+      ...answers,
+      {
+        wordId: current.id,
+        isCorrect,
+      },
+    ];
+    setAnswers(nextAnswers);
 
     const nextQuestion = currentQuestion + 1;
 
     if (nextQuestion < questions.length) {
       setCurrentQuestion(nextQuestion);
     } else {
+      const submissionKey = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       navigate('/quiz-results', {
         state: {
           score: newScore,
           total: questions.length,
+          answers: nextAnswers,
+          submissionKey,
         },
       });
     }
@@ -75,6 +96,9 @@ function QuizPage() {
 
   return (
     <div style={{ padding: '40px', textAlign: 'center' }}>
+      <div style={{ width: '100%', maxWidth: '420px', height: '10px', margin: '0 auto 20px', backgroundColor: '#ffffff', borderRadius: '999px', overflow: 'hidden' }}>
+      <div style={{ width: `${progressPercent}%`, height: '100%', backgroundColor: '#111827', transition: 'width 200ms ease' }} />
+    </div>
       <h1>Quiz</h1>
       <h2>Which word matches this definition?</h2>
       <p>{question.question}</p>
@@ -109,14 +133,6 @@ function QuizPage() {
         overflow: 'hidden',
       }}
     >
-      <div
-        style={{
-          width: `${progressPercent}%`,
-          height: '100%',
-          backgroundColor: '#111827',
-          transition: 'width 200ms ease',
-        }}
-      />
     </div>
     </div>
   );

@@ -1,23 +1,31 @@
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { LuPlus, LuBrain, LuSearch, LuBookOpen } from 'react-icons/lu';
+import '../styles/cards.css';
+
+const actions = [
+  { icon: LuPlus, label: 'Add a Word', href: '/add-word' },
+  { icon: LuBrain, label: 'Take a Vocab Quiz', href: '/quiz' },
+  { icon: LuSearch, label: 'Find a Word from the Definition', href: '/reverse-dict' },
+  { icon: LuBookOpen, label: 'View Word Bank', href: '/word-list' },
+];
 
 function Home() {
   const navigate = useNavigate();
+
   return (
     <div className="page">
-      <h1>Home</h1>
-      <div className="button-container">
-        <button onClick={() => navigate('/add-word')}>
-          Add Word
-        </button>
-        <button onClick={() => navigate('/quiz')}>
-          Take a Vocab Quiz
-        </button>
-        <button onClick={() => navigate('/reverse-dict')}>
-          Find A Word From The Definition
-        </button>
-        <button onClick={() => navigate('/word-list')}>
-          View Word Bank
-        </button>
+      <h1>What would you like to do?</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            onClick={() => navigate(action.href)}
+            className="action-card"
+          >
+            <action.icon size={20} color="#2a2a3a" />
+            <span className="action-card-label">{action.label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );

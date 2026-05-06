@@ -21,4 +21,12 @@ export default defineConfig([
     'no-lonely-if': ['error'],
     'array-bracket-spacing': ['error'],
     },}
+  ,{
+    files: ["test/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+      },
+    },
+  }
 ]);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -17,7 +18,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/register', {
+      const response = await fetch(`${API_BASE_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -35,7 +36,7 @@ function Register() {
   };
 
   return (
-    <div className="container">
+    <div className="login-container">
       <h1>Create an account</h1>
       <div className="main-content">
         <form>

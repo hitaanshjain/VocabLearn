@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate} from 'react-router-dom';
+import { API_BASE_URL } from '../config/api.js';
 
 function Login({ setIsLoggedIn, setUsername }) {
   const [username, setUsernameInput] = useState('');
@@ -16,7 +17,7 @@ function Login({ setIsLoggedIn, setUsername }) {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -35,16 +36,17 @@ function Login({ setIsLoggedIn, setUsername }) {
       setUsername(username);
 
       navigate("/home");
-    } catch (err) {
+    } 
+    catch (err) {
       setMessage(err.message);
     }
   };
 
   return (
-    <div className="container">
+    <div className="login-container">
       <h1>Log In</h1>
-      <div className="main-content">
-        <form>
+      <div className="main-content" style = {{ textAlign: 'center' }}>
+        <form onSubmit={handleSubmit}>
           <div>
             <input type="text" value={username} onChange={event => setUsernameInput(event.target.value)} placeholder="Username"/>
           </div>
@@ -52,7 +54,7 @@ function Login({ setIsLoggedIn, setUsername }) {
             <input type="password" value={password} onChange={event => setPassword(event.target.value)} placeholder="Password"/>
           </div>
           {message && <p>{message}</p>}
-          <input type="submit" value="Log In" onClick={handleSubmit}/>
+          <input type="submit" value="Log In" />
           <input type="button" value="Register" onClick={() => navigate('/register')} />
         </form>
       </div>
