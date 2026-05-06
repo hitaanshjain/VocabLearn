@@ -143,25 +143,6 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/seed', async (req, res) => {
-  try {
-    await Word.deleteMany({});
-
-    const seedWords = [
-      { word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
-      { word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
-      { word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
-      { word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
-      { word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
-    ];
-
-    const inserted = await Word.insertMany(seedWords);
-    res.json(inserted);
-  } catch (error) {
-    console.error('GET /api/seed error:', error);
-    res.status(500).json({ error: 'Failed to seed words' });
-  }
-});
 // Search routes
 app.get('/api/search', async (req, res) => {
   const q = (req.query.q || '').toLowerCase();
