@@ -32,10 +32,10 @@ function authenticateToken(req, res, next) {
     next();
   } catch (error) {
     console.log('JWT verify failed:', error.name, error.message);
-  // also log the token
     res.status(403).json({ error: 'Invalid token'});
   }
 }
+
 
 
 // Redirect root to frontend
@@ -117,16 +117,22 @@ app.post('/api/words', authenticateToken, async (req, res) => {
   try {
     const { word } = req.body;
 
+    if (!word || typeof word !== 'string') {
+      return res.status(400).json({ error: 'Valid word is required' });
+    }
+
     const result = await lookupWord(word);
+    const cleanWord = word.trim().toLowerCase();
+
     if (!result) {
       return res.status(404).json({ error: 'Word not found in dictionary' });
     }
+
     const newWord = new Word({
-      word,
+      word: cleanWord,
       partOfSpeech: result.partOfSpeech,
       definitions: result.definitions,
     });
-
 
     await newWord.save();
     res.status(201).json(newWord);
