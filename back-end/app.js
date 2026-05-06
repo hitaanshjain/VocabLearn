@@ -37,14 +37,6 @@ function authenticateToken(req, res, next) {
   }
 }
 
-// Mock data
-const mockWords = [
-  { id: 1, word: 'ephemeral', partOfSpeech: 'adj', definitions: ['Lasting for a very short time.'], correctCount: 0 },
-  { id: 2, word: 'ubiquitous', partOfSpeech: 'adj', definitions: ['Present, appearing, or found everywhere.'], correctCount: 0 },
-  { id: 3, word: 'pragmatic', partOfSpeech: 'adj', definitions: ['Dealing with things sensibly and realistically.'], correctCount: 0 },
-  { id: 4, word: 'lucid', partOfSpeech: 'adj', definitions: ['Expressed clearly; easy to understand.'], correctCount: 0 },
-  { id: 5, word: 'tenacious', partOfSpeech: 'adj', definitions: ['Tending to keep a firm hold of something.'], correctCount: 0 },
-];
 
 // Redirect root to frontend
 app.get('/', (req, res) => {
