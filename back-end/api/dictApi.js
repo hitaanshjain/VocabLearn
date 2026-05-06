@@ -8,8 +8,6 @@ const BASE_URL = "https://api.dictionaryapi.dev/api/v2/entries/en";
     const definitions = data[0].meanings.flatMap(m =>
         m.definitions.map(d => d.definition)
       );
-
-    console.log(pos);
     return {
         word: word,
         partOfSpeech: pos,
