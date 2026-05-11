@@ -1,93 +1,38 @@
 # VocabLearn
 
-## Description and Product Vision Statement
+VocabLearn is a full-stack vocabulary practice app with a quiz loop, saved word bank, reverse-dictionary search, and AI-assisted word generation. It is built to help users learn new words through repeated practice instead of one-off lookup.
 
-VocabLearn is a full-stack application that allows users to learn and practice new words to expand their vocabulary.
+## Live Demo
 
-Our minimum viable product features a word bank to which the user can add words, which can be either entered by the user or generated. Once users accumulate enough words, they can be quizzed on the words in their bank, and they can see how many times they have successfully answers questions involving a given word. In addition, the app includes a reverse dictionary feature for users to look up words based on a prompt or definition.
+- Frontend: [https://vocab-learn-frontend.onrender.com](https://vocab-learn-frontend.onrender.com)
+- Backend: [https://vocab-learn-api.onrender.com](https://vocab-learn-api.onrender.com)
 
-## Team members
+## What It Does
 
-[Akshara Taraniganty](https://github.com/akshara-t)  
-[Hitaansh Jain](https://github.com/hitaanshjain)  
-[Wonden Gyatso](https://github.com/wondeng)  
-[Sara Herschmann](https://github.com/saramhersch)  
-[Jaylon McDuffie](https://github.com/treejitsu)
+- Lets users add words manually or generate them with AI
+- Stores a personal word bank for later practice
+- Quizzes users on saved words and tracks accuracy over time
+- Supports reverse-dictionary style lookup from prompts or definitions
 
-## Deployment
+## Tech Stack
 
-Frontend: [https://vocab-learn-frontend.onrender.com](https://vocab-learn-frontend.onrender.com)
+- Frontend: React, Vite, React Router
+- Backend: Node.js, Express, MongoDB, Mongoose
+- Auth and security: JWT, bcrypt
+- AI integration: Google Generative AI
+- Tooling: ESLint, Mocha, Chai, C8
 
-Backend: [https://vocab-learn-api.onrender.com](https://vocab-learn-api.onrender.com)
+## Highlights
 
-Continuous deployment is configured with GitHub Actions and Render deploy hooks in [.github/workflows/cd.yml](.github/workflows/cd.yml).
+- Full-stack authentication and user-specific data
+- Quiz flow with progress tracking
+- Search and generation workflows for vocabulary discovery
+- Deployment automation with GitHub Actions and Render
+
+## Setup
 
 For local setup and testing, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## History
+## Notes
 
-VocabLearn was created as a way to help users expand their vocabulary and easily learn new words through quizzes and repitition. The idea originated from personal experiences of trying to find better vocabulary while writing as an English minor.
-
-Please refer to our [CONTRIBUTING.md](https://github.com/agile-students-spring2026/final-subparallel/blob/master/CONTRIBUTING.md) file for guidelines on collaboration, responsibilities, and accountability among team members.
-
-## Building and Testing
-
-### Prerequisites
-
-1. Install Node.js 18+ (includes npm).
-2. Clone this repository.
-
-### 1) Back-end setup and run
-
-From the project root:
-
-```bash
-cd back-end
-npm install
-```
-
-Create a `.env` file in `back-end/`:
-
-```env
-PORT=3000
-FRONTEND_URL=http://localhost:5173
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_jwt_secret
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-Start the API server:
-
-```bash
-npm start
-```
-
-Back-end runs at `http://localhost:3000`.
-
-### 2) Front-end setup and run
-
-Open a second terminal. From the project root:
-
-```bash
-cd front-end
-npm install
-npm run dev
-```
-
-Front-end runs at `http://localhost:5173`.
-
-### Quick run checklist
-
-1. Start back-end first (`back-end`, `npm start`).
-2. Start front-end second (`front-end`, `npm run dev`).
-3. Open `http://localhost:5173` in your browser.
-
-## Continuous Integration
-
-This project uses GitHub Actions to automate testing and deployment workflows.
-
-Current workflows include:
-- Automated backend testing
-- Frontend build validation
-- Continuous deployment workflows
-- Git activity logging for project tracking
+This repository is presented as a portfolio project. If you want to make it stronger for recruiters, add screenshots, a short architecture section, and 2 to 4 bullets describing your personal contributions.

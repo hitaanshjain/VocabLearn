@@ -1,7 +1,7 @@
 {
-  "name": "final-subparallel",
+  "name": "vocablearn",
   "version": "1.0.0",
-  "description": "VocabLearn is a full-stack application that allows users to learn and practice new words to expand their vocabulary.",
+  "description": "VocabLearn is a full-stack vocabulary practice app with quizzes, saved words, reverse-dictionary search, and AI-assisted word generation.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
