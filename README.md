@@ -59,6 +59,14 @@ VocabLearn is a full-stack vocabulary practice app with a quiz loop, saved word 
 - Added authentication and protected user data handling
 - Shaped the deployment and developer workflow for local setup and production hosting
 
+## Future Improvements
+
+- Add spaced repetition to improve long-term retention
+- Expand quiz modes with timed challenges and mixed difficulty sets
+- Add progress dashboards and streak tracking for motivation
+- Improve reverse search results with richer definitions and examples
+- Support exporting saved words for offline study or sharing
+
 ## Setup
 
 For local setup and testing, see [CONTRIBUTING.md](CONTRIBUTING.md).
